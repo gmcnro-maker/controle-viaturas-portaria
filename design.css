@@ -81,3 +81,10 @@ input[type=checkbox],input[type=radio]{width:1.25rem;min-height:1.25rem;height:1
  .topbar{padding:.5rem .75rem}.breadcrumbs{flex:1}.topbar-right{gap:.25rem}
 }
 @media(max-width:600px){.intro h1 br{display:inline}.intro h1 br::after{content:' '}}
+
+/* Menus por tarefa e atalhos de operação. */
+.task-nav-group{display:grid;gap:.3rem;margin-bottom:1rem}.task-nav-heading{font-size:.78rem;color:#9bb1ce;text-transform:uppercase;letter-spacing:.1em;padding:.5rem .7rem}.task-nav-group button{width:100%}
+.task-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-bottom:1.3rem}.task-shortcuts button{justify-content:flex-start;text-align:left;background:white;color:#254772;border:1px solid #dce5f2;padding:1rem}.task-shortcuts button>span{flex:1}.task-shortcuts b,.task-shortcuts small{display:block}.task-shortcuts small{font-size:.9rem;font-weight:400;color:#60738c;margin-top:.2rem}.task-shortcuts button:hover{background:#edf4ff;border-color:#abc5eb}
+.mobile-dock{display:none}.menu-veil{display:none}.skip-content{position:fixed;top:-6rem;left:1rem;z-index:100;background:white;padding:.75rem;color:#173e74}.skip-content:focus{top:1rem}
+@media(max-width:900px){.topbar{position:sticky;top:0;z-index:12}.menu-veil:not([hidden]){display:block;position:fixed;inset:0;z-index:13;background:#07182c80;border:0;border-radius:0}aside.open{top:0;height:100dvh;z-index:14;padding-bottom:6rem}.mobile-dock{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:15;gap:.2rem;justify-content:space-around;background:#fff;border-top:1px solid #dbe4ef;padding:.4rem .3rem calc(.4rem + env(safe-area-inset-bottom))}.mobile-dock button{display:flex;flex-direction:column;flex:1;gap:.2rem;background:white;color:#5c6e85;min-height:3.2rem;padding:.4rem .15rem;font-size:.73rem;border-radius:.6rem}.mobile-dock button[aria-current]{background:#e9f0ff;color:#2458bd;font-weight:700}.workspace main{padding-bottom:6rem}.task-shortcuts{grid-template-columns:1fr}.task-shortcuts button{min-height:4.5rem}#notice{bottom:6rem}.rail-bottom{padding-top:1rem}}
+@media print{.mobile-dock,.task-shortcuts,.menu-veil,.skip-content{display:none!important}}
