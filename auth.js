@@ -6,7 +6,7 @@ const trustedOrigin=origin=>{try{const u=new URL(origin);return u.protocol==='ht
 function receive(event){
  const data=event.data;if(!data||data.channel!==channel||!trustedOrigin(event.origin))return;
  if(data.type==='CEP4_READY'){
-  if(peer&&peer!==event.source)return;peer=event.source;peerOrigin=event.origin;button.disabled=false;message.textContent='Motorista: use seu Gmail autorizado. Demais perfis: use usuário e senha.';return;
+  if(peer&&peer!==event.source)return;peer=event.source;peerOrigin=event.origin;button.disabled=false;message.textContent='Motorista: entre com seu Gmail. Demais perfis: use usuário e senha.';return;
  }
  if(data.type!=='CEP4_RESULT'||event.source!==peer||event.origin!==peerOrigin)return;
  const entry=pending.get(data.id);if(!entry)return;pending.delete(data.id);clearTimeout(entry.timer);
