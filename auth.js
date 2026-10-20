@@ -44,7 +44,7 @@ boot().catch(error=>{message.textContent=error.message;button.disabled=true;});
 
 let provisioningAuth=null;
 window.cep4CreateInternalAccount=async(login,password)=>{
- if(!/^[a-z0-9._-]{3,40}$/.test(login)||typeof password!=='string'||password.length<12)throw Error('Use usuário de 3 a 40 caracteres e senha com pelo menos 12 caracteres.');
+ if(!/^[a-z0-9._-]{3,40}$/.test(login)||typeof password!=='string'||password.length<6)throw Error('Use usuário de 3 a 40 caracteres e senha com pelo menos 6 caracteres.');
  if(!provisioningAuth){provisioningAuth=getAuth(initializeApp(settings.firebase,'cep4-provisioning'));await setPersistence(provisioningAuth,inMemoryPersistence);}
  try{const result=await createUserWithEmailAndPassword(provisioningAuth,login+'@acesso.cep4.invalid',password);return result.user.uid;}finally{await signOut(provisioningAuth);}
 };
