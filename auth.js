@@ -6,7 +6,7 @@ const trustedOrigin=origin=>{try{const u=new URL(origin);return u.protocol==='ht
 function receive(event){
  const data=event.data;if(!data||data.channel!==channel||!trustedOrigin(event.origin))return;
  if(data.type==='CEP4_READY'){
-  if(peer&&peer!==event.source)return;peer=event.source;peerOrigin=event.origin;button.disabled=false;message.textContent='Motorista: use seu Gmail autorizado. Guarda, P4 e Administrador: use usuário e senha.';return;
+  if(peer&&peer!==event.source)return;peer=event.source;peerOrigin=event.origin;button.disabled=false;message.textContent='Motorista: use seu Gmail autorizado. Demais perfis: use usuário e senha.';return;
  }
  if(data.type!=='CEP4_RESULT'||event.source!==peer||event.origin!==peerOrigin)return;
  const entry=pending.get(data.id);if(!entry)return;pending.delete(data.id);clearTimeout(entry.timer);
@@ -30,7 +30,7 @@ async function boot(){
  if(!settings?.firebase?.apiKey||!settings.firebase.projectId||!settings.firebase.authDomain||!settings.firebase.appId)throw Error('O responsável ainda precisa configurar o login Google. Nenhum dado pode ser enviado.');
  const endpoint=new URL(settings.webAppUrl);if(endpoint.origin!=='https://script.google.com'||!endpoint.pathname.endsWith('/exec'))throw Error('Endereço do serviço CEP4 inválido.');
  auth=getAuth(initializeApp(settings.firebase));auth.languageCode='pt-BR';await setPersistence(auth,inMemoryPersistence);
- const p4=document.createElement('form');p4.innerHTML='<details><summary>Guarda, P4 e Administrador · usuário e senha</summary><label>Usuário<input name="email" type="text" required autocomplete="username" pattern="[A-Za-z0-9._-]{3,40}" maxlength="40"></label><label>Senha<input name="password" type="password" required autocomplete="current-password"></label><button type="submit">Entrar</button></details>';button.after(p4);window.cep4EnhancePasswords(p4);
+ const p4=document.createElement('form');p4.innerHTML='<details><summary>Acesso com usuário e senha</summary><label>Usuário<input name="email" type="text" required autocomplete="username" pattern="[A-Za-z0-9._-]{3,40}" maxlength="40"></label><label>Senha<input name="password" type="password" required autocomplete="current-password"></label><button type="submit">Entrar</button></details>';button.after(p4);window.cep4EnhancePasswords(p4);
  p4.onsubmit=async event=>{event.preventDefault();const submit=p4.querySelector('button[type=submit]');submit.disabled=true;try{if(!peer)throw Error('Aguarde a conexão com o CEP4.');const credential=await signInWithEmailAndPassword(auth,p4.elements.email.value.trim().toLowerCase()+'@acesso.cep4.invalid',p4.elements.password.value);current=credential.user;await window.cep4Load();}catch(error){current=null;await signOut(auth);window.cep4Clear();message.textContent=error.message;}finally{p4.elements.password.value='';submit.disabled=false;}};
  channel=crypto.randomUUID();endpoint.searchParams.set('channel',channel);frame.src=endpoint.href;
  button.onclick=async()=>{button.disabled=true;try{
