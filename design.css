@@ -42,3 +42,42 @@ input[type=checkbox],input[type=radio]{width:1.25rem;min-height:1.25rem;height:1
 .intro .institution-marks{gap:1.5rem;margin-bottom:.5rem}.intro .institution-marks img{height:6.5rem;width:auto}.intro .institution-divider{height:5rem}
 .intro .institutional-brand{gap:1.4rem;margin-bottom:2.4rem}.intro .institution-name{font-size:1.35rem;line-height:1.5;letter-spacing:.035em;max-width:29rem}.intro .institution-name small{font-size:1rem;letter-spacing:.06em;color:#c2d2e6;margin-top:.6rem}
 @media(max-width:600px){.intro .institution-marks{gap:1rem}.intro .institution-marks img{height:4.6rem}.intro .institution-divider{height:3.5rem}.intro .institutional-brand{gap:1.1rem;margin-bottom:1.8rem}.intro .institution-name{font-size:1.1rem}}
+
+/* Apresentação móvel: identidade compacta e operação por toque. */
+@media(max-width:900px){
+ .layout{grid-template-columns:minmax(0,1fr)}
+ aside{display:none;position:fixed;left:0;top:4.5rem;bottom:0;height:calc(100dvh - 4.5rem);width:min(18rem,90vw);box-shadow:10px 0 30px #11243b30}
+ aside.open{display:flex}.mobile-menu{display:inline-flex;min-width:48px;min-height:48px}
+}
+@media(max-width:600px){
+ .login{display:grid;grid-template-columns:minmax(0,1fr)}
+ .intro{min-height:0;padding:1.25rem 1.25rem 1rem}
+ .intro .institutional-brand{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.8rem;margin:0}
+ .intro .institution-marks{gap:.5rem;margin:0}
+ .intro .institution-marks img{height:2.7rem;max-width:3.5rem;width:auto}
+ .intro .institution-divider{height:2.5rem}
+ .intro .institution-name{font-size:.83rem;line-height:1.4;letter-spacing:.02em;overflow-wrap:anywhere}
+ .intro .institution-name small{font-size:.85rem;letter-spacing:0;margin-top:.35rem}
+ .intro h1{font-size:1.35rem;letter-spacing:-.03em;line-height:1.35;margin-top:1rem}
+ .intro h1 br{display:none}.intro h1 br:after{content:' '}
+ .intro>p{display:none}
+ .loginbox{width:auto;max-width:none;margin:0;padding:1.5rem 1.25rem 2rem}
+ .loginbox h1{font-size:1.6rem}.loginbox>p br{display:none}
+ .loginbox #google-login,.loginbox button{min-height:3rem;font-size:1rem;width:100%}
+ .loginbox summary{min-height:3rem;display:flex;align-items:center;cursor:pointer;font-size:1rem}
+ .loginbox input{width:100%;min-height:3rem;font-size:1rem}
+ .login-note,.login-privacy{margin-top:1rem!important}
+ .formgrid{grid-template-columns:minmax(0,1fr)}
+ input,select,textarea{max-width:100%;box-sizing:border-box;font-size:1rem!important}
+ input[type=file]{width:100%;height:auto;padding:.7rem;white-space:normal}
+ input[type=file]::file-selector-button{min-height:2.75rem;max-width:100%;font:inherit;border:1px solid #cbd8eb;border-radius:.4rem;background:#edf3fe;color:#203b60;margin-right:.5rem}
+ button,.hero-button,.icon-button{min-height:48px}
+ .movements-table tr{grid-template-columns:minmax(0,1fr);margin:.8rem;border:1px solid var(--line);border-radius:.65rem;background:white;gap:.85rem}
+ .movements-table td{overflow-wrap:anywhere}.movements-table .badge{white-space:normal}
+ .movements-table td.align-right{grid-column:1}.movements-table td.align-right button{width:100%;min-height:48px}
+ .tabs{width:100%;flex-wrap:wrap}.tabs button{flex:1 1 auto;white-space:normal}
+ dialog{max-height:calc(100dvh - 2rem);overflow-y:auto;padding:1rem}
+ .button-row{flex-wrap:wrap}.button-row button{flex:1 1 auto}
+ .topbar{padding:.5rem .75rem}.breadcrumbs{flex:1}.topbar-right{gap:.25rem}
+}
+@media(max-width:600px){.intro h1 br{display:inline}.intro h1 br::after{content:' '}}
