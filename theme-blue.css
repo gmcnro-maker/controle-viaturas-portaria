@@ -53,3 +53,4 @@ dialog::backdrop{background:#071a35a6}.dialog-error,[role=alert]:not(:empty){col
 }
 @media(prefers-reduced-motion:reduce){button{transition:none!important}button:active{transform:none!important}}
 @media print{.workspace-context{display:none!important}.panel table{display:table!important}.panel table thead{display:table-header-group!important}.panel table tbody{display:table-row-group!important}.panel table tr{display:table-row!important}.panel table td{display:table-cell!important}.panel table td:before{display:none!important}}
+.recent .maintenance-table{min-width:0;width:100%;table-layout:fixed}.recent .maintenance-table th,.recent .maintenance-table td{white-space:normal;overflow-wrap:anywhere}

@@ -26,6 +26,17 @@
    if(role==='Comandante da Guarda'){title.textContent='Painel da Guarda';description.textContent='Acompanhe as missões e as autorizações do seu plantão.';}
    if(role==='Administrador'){title.textContent='Painel administrativo';description.textContent='Acompanhe a operação e acesse as ferramentas de gestão.';}
    const shortcuts=document.querySelector('.task-shortcuts');
+   const recent=document.querySelector('.recent'),tabs=recent?.querySelector('.tabs');
+   if(tabs&&role!=='Motorista'&&(!state.user.customRole||uiPermit('vehicles.read'))){
+    const maintenance=document.createElement('button');maintenance.type='button';maintenance.dataset.filter='Manutenção';maintenance.textContent='Em manutenção';maintenance.className=dashboardFilter==='Manutenção'?'selected':'';maintenance.setAttribute('aria-pressed',String(dashboardFilter==='Manutenção'));maintenance.onclick=()=>{dashboardFilter='Manutenção';render();};tabs.append(maintenance);
+    if(dashboardFilter==='Manutenção'){
+     const vehicles=maintenanceVehicles(state.vehicles,searchTerm);
+     recent.querySelector('h2').textContent='Viaturas em manutenção';recent.querySelector('.panel-head p').textContent='Viaturas indisponíveis para saída.';
+     const search=recent.querySelector('#dashboard-search');if(search){search.placeholder='Buscar prefixo, placa ou modelo';search.setAttribute('aria-label','Buscar viatura em manutenção');}
+     recent.querySelector('.tablewrap').innerHTML='<table class="maintenance-table"><thead><tr><th>Viatura / placa</th><th>Modelo</th><th>Situação</th></tr></thead><tbody>'+vehicles.map(v=>'<tr><td><b>'+esc(v.prefix)+'</b><br>'+esc(v.plate)+'</td><td>'+esc(v.model)+'</td><td><span class="badge warn">Em manutenção</span></td></tr>').join('')+'</tbody></table>'+(!vehicles.length?'<div class="empty">Nenhuma viatura em manutenção neste filtro.</div>':'');
+     recent.querySelector('.panel-foot').textContent=vehicles.length+' viatura(s) em manutenção';recent.querySelector('[data-page="Movimentações"]').onclick=()=>{page='Viaturas';render();};
+    }
+   }
    if(shortcuts&&role==='Administrador')shortcuts.innerHTML=[['Acessos','users','Gerenciar usuários'],['Viaturas','car','Gerenciar viaturas'],['Relatórios','report','Relatórios do plantão']].map(([key,icon,text])=>'<button type="button" data-blue-go="'+key+'">'+svg(icon,22)+'<span>'+text+'</span>'+svg('chevron',16)+'</button>').join('');
    if(shortcuts&&role==='Comandante da Guarda')shortcuts.innerHTML=[['Comandante da Guarda','shield','Autorizações e entradas'],['Movimentações','arrows','Missões em andamento'],['Relatórios','report','Relatório do plantão']].map(([key,icon,text])=>'<button type="button" data-blue-go="'+key+'">'+svg(icon,22)+'<span>'+text+'</span>'+svg('chevron',16)+'</button>').join('');
   }
@@ -39,4 +50,5 @@
   document.querySelectorAll('#sidebar .rail-version span:last-child').forEach(s=>s.textContent='Theme Blue');
  };
 })();
+function maintenanceVehicles(vehicles,query=''){const search=query.trim().toLocaleLowerCase('pt-BR');return vehicles.filter(v=>!v.deleted&&v.status==='Manutenção'&&(!search||[v.prefix,v.plate,v.model].join(' ').toLocaleLowerCase('pt-BR').includes(search)));}
 
