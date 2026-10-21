@@ -24,7 +24,7 @@
    submitButtons.forEach(b=>b.classList.toggle('ma-field-hidden',index!==groups.length-1));
    prior.disabled=index===0;next.hidden=index===groups.length-1;count.textContent=(index+1)+' de '+groups.length;
    controls.hidden=groups.length<2;
-   if(review){review.hidden=index!==groups.length-1;const selectedVehicle=state.vehicles.find(v=>v.id===form.elements.vehicleId.value);review.innerHTML='<h2>Confira sua solicitação</h2><p><b>'+esc(selectedVehicle?.prefix||'Viatura')+'</b> · '+esc(form.elements.destination.value)+'</p><p>Odômetro: '+number(selectedVehicle?.odometer||0)+' km</p>';}
+   if(review){review.hidden=index!==groups.length-1;const selectedVehicle=state.vehicles.find(v=>v.id===form.elements.vehicleId.value);review.innerHTML='<h2>Confira sua solicitação</h2><p><b>'+esc(selectedVehicle?.prefix||'Viatura')+'</b> · '+esc(form.elements.destination.value)+'</p><p>Odômetro: '+number(selectedVehicle?.odometer??Number(form.elements.initial?.value||0))+' km</p>';}
   }
   function validGroup(){for(const label of groups[index])for(const f of label.querySelectorAll('input,select,textarea'))if(!f.checkValidity()){f.reportValidity();return false;}return true;}
   next.onclick=()=>{if(validGroup()){index++;paint();animate(form);}};
@@ -146,3 +146,4 @@
   if(edit){setTimeout(()=>{if(!document.querySelector('.ma-shell'))return;const form=document.querySelector(edit.hasAttribute('data-access')?'#access-form':'#profile-form');if(!form)return;stack.push({...route});route={page,taskLabel:form.id==='access-form'?'Autorizar acesso':'Criar ou editar perfil'};const main=document.querySelector('.ma-content')||document.querySelector('.layout main');main?.querySelectorAll('.ma-hidden').forEach(n=>n.classList.remove('ma-hidden'));const shellBody=document.querySelector('.ma-body');shellBody.innerHTML='';shellBody.append(main);main.className='ma-content';showOnly(form,main);document.querySelector('.ma-shell [data-ma-title]').textContent='Editar cadastro';wizard(form);animate(main);},0);}
  });
 })();
+
