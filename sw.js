@@ -1,5 +1,5 @@
-const CACHE='dpl-static-v2';
-const ASSETS=['ce-p4-icon-192.png','ce-p4-icon-512.png','brasao-pmro-transparente.png','brasao-centro-ensino-transparente.png'].map(p=>new URL(p,self.registration.scope).href);
+const CACHE='dpl-static-v3';
+const ASSETS=['ce-p4-viatura-192.png','ce-p4-viatura-512.png','brasao-pmro-transparente.png','brasao-centro-ensino-transparente.png'].map(p=>new URL(p,self.registration.scope).href);
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('dpl-static-')&&k!==CACHE).map(k=>caches.delete(k)))));});
 // Não guarda respostas autenticadas, fotografias, tokens, HTML ou código da aplicação.

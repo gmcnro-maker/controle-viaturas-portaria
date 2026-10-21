@@ -10,7 +10,7 @@
  "background_color":"#f4f7fc",
  "theme_color":"#0e2d50",
  "icons":[
-  {"src":"ce-p4-icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-  {"src":"ce-p4-icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  {"src":"ce-p4-viatura-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+  {"src":"ce-p4-viatura-512.png","sizes":"512x512","type":"image/png","purpose":"any"}
  ]
 }
