@@ -1,0 +1,54 @@
+/* Theme Blue: identidade institucional, ações claras e leitura confortável. */
+:root{--blue:#1263d6;--blue-deep:#0b2444;--ink:#17334f;--line:#dce6f1;--bg:#f2f6fc}
+body{background:#f2f6fc;color:var(--ink)}
+button{min-height:2.75rem;border-radius:.65rem;transition:background .15s,box-shadow .15s,transform .15s}
+button:not(.text-button):not(.icon-button):not(.password-toggle):not([data-page]):not([data-go]):not([data-more]){font-weight:600}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #168cf0;outline-offset:4px}
+button:disabled{cursor:wait;opacity:.55}button:not(:disabled):active{transform:translateY(1px)}
+input,select,textarea{border-radius:.6rem;min-height:2.75rem;border-color:#b9cbe0;color:#183953}
+input:focus,select:focus,textarea:focus{outline:3px solid #2289e52b;border-color:#1263d6}
+input[type=checkbox],input[type=radio]{min-height:0;width:1.15rem;height:1.15rem;accent-color:#1263d6}
+.layout{grid-template-columns:17rem minmax(0,1fr)}
+aside{background:linear-gradient(170deg,#0a2444 0%,#10365b 100%);border-right:1px solid #234b70}
+aside .brand{border-bottom:1px solid #ffffff18;padding-bottom:1.2rem}
+aside nav button{min-height:3rem;border-radius:.65rem;color:#cee0f5;gap:.65rem}
+aside nav button:hover{background:#ffffff0d;color:white}
+aside nav button.active{background:linear-gradient(100deg,#1465d8,#275eb5);box-shadow:inset 3px 0 0 #79cbff,0 5px 18px #0002;color:white}
+.task-nav-heading{color:#9cbbd9;letter-spacing:.1em;font-size:.75rem}
+.topbar{background:#ffffffed;border-bottom:1px solid #dce7f2;backdrop-filter:blur(12px)}
+.workspace{min-width:0}.workspace-context{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:0 0 1.2rem;padding:.75rem 1rem;border:1px solid #d4e4f6;border-radius:.75rem;background:#eaf3ff}
+.workspace-context>span{display:flex;gap:.5rem;align-items:center;font-size:.9rem;font-weight:650;color:#1456a2}
+.workspace-context p{font-size:.85rem;color:#496782;margin:0}
+.page-heading h1{font-size:clamp(1.65rem,2.5vw,2.25rem);line-height:1.25}
+.page-heading p,.panel>p{color:#526c85;line-height:1.65}
+.panel{border-radius:1rem;box-shadow:0 5px 18px #143d6806;border-color:#dce6f1}
+.hero{background:linear-gradient(115deg,#0e2d52,#164f81);border:1px solid #25587e;box-shadow:0 10px 24px #143d6812;border-radius:1rem}
+.stat{border-radius:.9rem;box-shadow:0 4px 16px #163c6505;border-top:3px solid #c8def8}
+.stat small,.panel-head p,td small,.main-footer{color:#526b85}
+.task-shortcuts{gap:.85rem}.task-shortcuts button{border:1px solid #c9ddf4;background:white;color:#174c83;border-radius:.8rem;min-height:4rem;box-shadow:0 4px 12px #173a6006}
+.task-shortcuts button:hover{background:#eaf3ff;border-color:#639ee5;box-shadow:0 6px 18px #1263d612}
+.badge{border-radius:2rem;padding:.4rem .7rem;font-weight:650;font-size:.85rem}
+.badge.mission{background:#e5f1ff;color:#0a529e}.badge.good{background:#e8f6ef;color:#17603f}.badge.warn{background:#fff3d9;color:#76530c}
+th{background:#edf4fc;color:#385779;font-size:.8rem}td,td b,td small{font-size:.9rem}
+.tabs{border-radius:.65rem;background:#eaf0f8;flex-wrap:wrap}.tabs button{min-height:2.5rem;color:#405e7b}.tabs button.selected{background:#135fcb;color:white;box-shadow:0 3px 9px #125abe22}
+.danger-action{color:#a52b3d!important;background:#fff0f2!important;border:1px solid #e6bbc3!important}
+dialog{max-height:85dvh;overflow-y:auto;border-radius:1rem;width:min(32rem,calc(100% - 2rem))}
+dialog::backdrop{background:#071a35a6}.dialog-error,[role=alert]:not(:empty){color:#9e273b;background:#fff0f2;padding:.75rem;border-radius:.5rem}
+#notice:not(:empty){background:#102f51;color:white;border-left:4px solid #69c6ff;max-width:min(30rem,calc(100vw - 2rem))}
+.intro{background:radial-gradient(ellipse at 15% 10%,#20578888,transparent 65%),linear-gradient(140deg,#0b2343,#123c63)}
+.loginbox #google-login{border-color:#aac8ec;box-shadow:0 3px 12px #195a9f08}.loginbox #google-login:not(:disabled):hover{background:#eaf3ff}
+.loginbox #login-message{color:#4c6683}.login-privacy,.login-note{color:#526b85}
+.password-toggle{min-width:2.75rem;min-height:2.75rem}.formgrid fieldset{border:1px solid #cfdeee;border-radius:.7rem}
+.mobile-dock{background:#ffffffef;box-shadow:0 -4px 18px #1235560d;border-top:1px solid #d4e2f2;backdrop-filter:blur(12px)}
+.mobile-dock button[aria-current=page]{background:#e4efff;color:#0d58ae;border-radius:.65rem}
+@media(max-width:1100px){.layout{grid-template-columns:14rem minmax(0,1fr)}.workspace-context{align-items:flex-start;flex-direction:column;gap:.35rem}}
+@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}aside{width:min(18rem,90vw)}}
+@media(max-width:600px){
+ main{padding:1.2rem 1rem 6rem}.workspace-context{padding:.75rem;margin-bottom:1rem}.workspace-context p{font-size:.85rem}.page-heading{flex-wrap:wrap;gap:.75rem}.page-heading>button{margin:0;min-height:2.8rem}
+ .task-shortcuts{grid-template-columns:minmax(0,1fr)}.task-shortcuts button{width:100%;min-height:3.5rem}.stats{grid-template-columns:minmax(0,1fr)}
+ .panel .tablewrap table{min-width:0;white-space:normal;width:100%;display:block}.panel table thead{display:none}.panel table tbody{display:grid;gap:.8rem;width:100%}.panel table tr{display:grid;border:1px solid #d8e5f3;border-radius:.75rem;padding:.8rem;gap:.6rem;background:#fff}.panel table td{display:block;padding:0!important;border:0;text-align:left;overflow-wrap:anywhere}.panel table td:before{content:attr(data-label);display:block;color:#5c7590;font-size:.75rem;margin-bottom:.25rem}.panel table td:empty{display:none}
+ .formgrid,.permission-grid{grid-template-columns:minmax(0,1fr)}.button-row{flex-wrap:wrap}.button-row button{flex:1;min-width:7rem}.institution-name{overflow-wrap:anywhere}.breadcrumbs b{max-width:9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .loginbox{padding-top:1.5rem}.intro h1{font-size:1.45rem}.intro .institution-name{font-size:.8rem}.intro .institution-name small{font-size:.85rem}
+}
+@media(prefers-reduced-motion:reduce){button{transition:none!important}button:active{transform:none!important}}
+@media print{.workspace-context{display:none!important}.panel table{display:table!important}.panel table thead{display:table-header-group!important}.panel table tbody{display:table-row-group!important}.panel table tr{display:table-row!important}.panel table td{display:table-cell!important}.panel table td:before{display:none!important}}
