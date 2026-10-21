@@ -7,10 +7,10 @@
   if(page==='Viaturas')document.querySelector('#register [name=odometer]')?.closest('label').remove();
   const form=document.querySelector('#departure');if(!form)return;
   const select=form.elements.vehicleId,reading=form.querySelector('#initial-reading'),toggle=form.querySelector('#exit-divergence');if(!select||!reading)return;
-  const label=reading.closest('label'),hint=document.createElement('small');label.append(hint);
+  const label=reading.closest('label'),hint=document.createElement('small');select.closest('label').after(label);label.append(hint);const firstPhoto=document.createElement('label');firstPhoto.innerHTML='Foto do primeiro odômetro (obrigatória)<input name="firstPhoto" type="file" accept="image/jpeg,image/png" capture="environment">';label.after(firstPhoto);
   function update(){
    const v=state.vehicles.find(item=>item.id===select.value),pending=!!v&&v.odometer==null;
-   reading.type=pending?'number':'text';reading.readOnly=!pending;reading.required=pending;
+   firstPhoto.hidden=!pending;firstPhoto.querySelector('input').required=pending;firstPhoto.querySelector('input').disabled=!pending;reading.type=pending?'number':'text';reading.readOnly=!pending;reading.required=pending;
    if(pending){reading.name='initial';reading.min='0';reading.step='1';reading.inputMode='numeric';reading.value='';reading.placeholder='Leitura atual do painel';}
    else{reading.removeAttribute('name');reading.value=v?number(v.odometer)+' km':'Selecione uma viatura';}
    label.firstChild.textContent=pending?'Odômetro inicial da primeira saída':'Odômetro inicial · automático';

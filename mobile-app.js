@@ -18,7 +18,7 @@
   form.after(controls);const prior=controls.querySelector('[data-prev]'),next=controls.querySelector('[data-next]'),count=controls.querySelector('span');
   const submitButtons=[...form.querySelectorAll('button')].filter(b=>b.type==='submit');
   function paint(){
-   labels=fields(form);groups=[];for(let i=0;i<labels.length;i+=2)groups.push(labels.slice(i,i+2));if(!groups.length)groups=[[]];index=Math.min(index,groups.length-1);
+   labels=fields(form);groups=[];for(const label of labels){const large=!!label.querySelector('textarea,input[type=file]'),last=groups.at(-1);if(large||!last||last.length===2||last.some(l=>l.querySelector('textarea,input[type=file]')))groups.push([label]);else last.push(label);}if(!groups.length)groups=[[]];index=Math.min(index,groups.length-1);
    labels.forEach(l=>l.classList.toggle('ma-field-hidden',!groups[index].includes(l)));
    form.querySelectorAll('fieldset').forEach(f=>f.classList.toggle('ma-field-hidden',![...f.querySelectorAll('label')].some(l=>!l.classList.contains('ma-field-hidden'))));
    submitButtons.forEach(b=>b.classList.toggle('ma-field-hidden',index!==groups.length-1));
@@ -33,9 +33,9 @@
   form.addEventListener('submit',e=>{
    if(index<groups.length-1){e.preventDefault();e.stopImmediatePropagation();if(validGroup()){index++;paint();animate(form);}return;}
    const invalid=[...form.elements].find(f=>f.willValidate&&!f.checkValidity());
-   if(invalid){e.preventDefault();e.stopImmediatePropagation();const position=labels.findIndex(l=>l.contains(invalid));if(position>=0)index=Math.floor(position/2);paint();invalid.reportValidity();}
+   if(invalid){e.preventDefault();e.stopImmediatePropagation();const position=labels.findIndex(l=>l.contains(invalid));if(position>=0)index=groups.findIndex(group=>group.includes(labels[position]));paint();invalid.reportValidity();}
   },true);
-  form.addEventListener('change',e=>{if(e.target.type==='checkbox')paint();});
+  form.addEventListener('change',e=>{if(['checkbox','radio'].includes(e.target.type)||e.target.name==='vehicleId')paint();});
   new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))paint();}).observe(form,{childList:true,subtree:true});
   paint();
  }
