@@ -100,11 +100,12 @@
    if(!route.menu&&role==='Comandante da Guarda')ordered.sort((a,b)=>(a.key==='Comandante da Guarda'?-1:b.key==='Comandante da Guarda'?1:0));
    if(!route.menu&&role==='Administrador'){const priority=['Acessos','Viaturas','Movimentações','Relatórios'];ordered.sort((a,b)=>(priority.includes(a.key)?priority.indexOf(a.key):99)-(priority.includes(b.key)?priority.indexOf(b.key):99));}
    for(const item of ordered){const label=item.key==='Movimentações'?(role==='Motorista'?'Minhas missões':'Missões'):item.key==='Comandante da Guarda'?'Autorizar saída':item.label;grid.append(tile(label,item.key==='Viaturas'?'car':item.key==='Acessos'?'users':item.key==='Relatórios'?'report':item.key==='Comandante da Guarda'?'shield':'arrows',()=>navigate({page:item.key,...(item.key==='Comandante da Guarda'?{taskLabel:'Autorizar saída'}:item.key==='Movimentações'?{taskLabel:role==='Motorista'?'Minhas movimentações':'Movimentações da frota'}:{})}),!grid.children.length));}
-   if(!route.menu&&role==='Motorista')grid.append(tile('Registrar retorno','car',()=>navigate({page:'Movimentações',taskLabel:'Registrar retorno'})));
+   if(role==='Motorista'){if(!route.menu)grid.append(tile('Registrar retorno','car',()=>navigate({page:'Movimentações',taskLabel:'Registrar retorno'})));grid.append(tile('Status das viaturas','car',()=>navigate({page:'Painel',fleet:true})));}
    if(!route.menu&&role==='Comandante da Guarda')grid.append(tile('Conferir entrada','check',()=>navigate({page:'Comandante da Guarda',taskLabel:'Conferir entrada'})));
    for(const item of nav.filter(n=>!n.key)){grid.append(tile(item.label,'report',()=>{route={page:'Integrações',maintenance:true};stack.push({home:true});item.button.click();}));}
-   const account=nav.find(n=>n.key==='Integrações');if(account&&(route.menu||role!=='Comandante da Guarda'))grid.append(tile('Minha conta','link',()=>navigate({page:'Integrações',account:true})));
+   const account=nav.find(n=>n.key==='Integrações');if(account&&(route.menu||!['Comandante da Guarda','Motorista'].includes(role)))grid.append(tile('Minha conta','link',()=>navigate({page:'Integrações',account:true})));
    paginateTiles(grid);
+  }else if(route.fleet){title.textContent='Status das viaturas';body.innerHTML=driverFleetPanel();bindDriverFleet(body);
   }else if(route.missionId){title.textContent='Minha missão';body.innerHTML=missionPanel(route.missionId);body.querySelector('[data-mission-return]')?.addEventListener('click',e=>showAction(e.currentTarget.dataset.missionReturn,'return'));
   }else if(route.account){
    title.textContent='Minha conta';body.innerHTML='<span class="ma-role">'+esc(role)+'</span><h1>'+esc(state.user.name)+'</h1><p>Seu perfil determina as funções disponíveis.</p>';
