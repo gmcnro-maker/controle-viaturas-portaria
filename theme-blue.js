@@ -16,6 +16,7 @@
   const [label,hint]=workspace[role]||[role,'Recursos disponíveis conforme suas permissões.'];
   if(heading){const context=document.createElement('div');context.className='workspace-context';context.innerHTML='<span>'+svg('shield',18)+' '+esc(label)+'</span><p>'+esc(hint)+'</p>';heading.before(context);}
   if(page==='Painel'){
+   document.querySelectorAll('.hero,.process-card').forEach(section=>section.remove());
    const title=document.querySelector('.page-heading h1'),description=document.querySelector('.page-heading p');
    if(role==='Motorista'){
     title.textContent='Meu serviço';description.textContent='Suas solicitações, missões e retornos em um só lugar.';document.querySelector('.side-stack')?.remove();document.querySelector('.hero')?.remove();
