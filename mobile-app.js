@@ -95,12 +95,12 @@
   if(route.home||route.menu){
    title.textContent=route.menu?'Funções':'Início';body.innerHTML='<span class="ma-role">'+esc(role)+'</span><h1>'+(route.menu?'Escolha uma função':'O que deseja fazer?')+'</h1><div class="ma-tiles"></div>';
    const grid=body.querySelector('.ma-tiles');
-   if(!route.menu&&(role==='Motorista'||uiPermit('trips.create')))grid.append(tile('Solicitar saída','plus',()=>navigate({page:'Movimentações',taskLabel:'Solicitar saída'}),true));
+   if(!route.menu&&(role==='Motorista'||uiPermit('trips.create')))grid.append(tile(role==='Motorista'?'SAÍDA':'Solicitar saída','plus',()=>navigate({page:'Movimentações',taskLabel:'Solicitar saída'}),true));
    const ordered=nav.filter(n=>n.key&&n.key!=='Painel'&&n.key!=='Integrações'&&(route.menu||role!=='Motorista'||n.key!=='Relatórios')&&(route.menu||role!=='Comandante da Guarda'||!['Viaturas','Policiais'].includes(n.key)));
    if(!route.menu&&role==='Comandante da Guarda')ordered.sort((a,b)=>(a.key==='Comandante da Guarda'?-1:b.key==='Comandante da Guarda'?1:0));
    if(!route.menu&&role==='Administrador'){const priority=['Acessos','Viaturas','Movimentações','Relatórios'];ordered.sort((a,b)=>(priority.includes(a.key)?priority.indexOf(a.key):99)-(priority.includes(b.key)?priority.indexOf(b.key):99));}
    for(const item of ordered){const label=item.key==='Movimentações'?(role==='Motorista'?'Minhas missões':'Missões'):item.key==='Comandante da Guarda'?'Autorizar saída':item.label;grid.append(tile(label,item.key==='Viaturas'?'car':item.key==='Acessos'?'users':item.key==='Relatórios'?'report':item.key==='Comandante da Guarda'?'shield':'arrows',()=>navigate({page:item.key,...(item.key==='Comandante da Guarda'?{taskLabel:'Autorizar saída'}:item.key==='Movimentações'?{taskLabel:role==='Motorista'?'Minhas movimentações':'Movimentações da frota'}:{})}),!grid.children.length));}
-   if(role==='Motorista'){if(!route.menu)grid.append(tile('Registrar retorno','car',()=>navigate({page:'Movimentações',taskLabel:'Registrar retorno'})));grid.append(tile('Status das viaturas','car',()=>navigate({page:'Painel',fleet:true})));}
+   if(role==='Motorista'){if(!route.menu)grid.append(tile('RETORNO','car',()=>navigate({page:'Movimentações',taskLabel:'Registrar retorno'})));grid.append(tile('Status das viaturas','car',()=>navigate({page:'Painel',fleet:true})));}
    if(!route.menu&&role==='Comandante da Guarda')grid.append(tile('Conferir entrada','check',()=>navigate({page:'Comandante da Guarda',taskLabel:'Conferir entrada'})));
    for(const item of nav.filter(n=>!n.key)){grid.append(tile(item.label,'report',()=>{route={page:'Integrações',maintenance:true};stack.push({home:true});item.button.click();}));}
    const account=nav.find(n=>n.key==='Integrações');if(account&&(route.menu||!['Comandante da Guarda','Motorista'].includes(role)))grid.append(tile('Minha conta','link',()=>navigate({page:'Integrações',account:true})));
@@ -117,6 +117,7 @@
    if(!selected&&Number.isInteger(route.taskIndex))selected=tasks[route.taskIndex];
    if(!selected&&tasks.length===1)selected=tasks[0];
   if(selected){
+    if(role==='Motorista'&&selected.label==='Minhas movimentações')selected.table?.querySelectorAll('thead tr > :last-child,tbody tr > :last-child').forEach(cell=>cell.remove());
     activeTask=selected;title.textContent=selected.label;body.append(main);main.className='ma-content';showOnly(selected.node,main);
     if(selected.form)wizard(selected.node);
     if(selected.table)paginate(selected.table,selected.predicate);
