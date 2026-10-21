@@ -9,6 +9,7 @@
   if(next.page)page=next.page;render();
  }
  function back(){navigate(stack.pop()||{home:true},true);}
+ window.cep4MobileMission=id=>navigate({page:'Movimentações',missionId:id});
  function fields(form){return [...form.querySelectorAll('label')].filter(l=>l.querySelector('input:not([type=hidden]),select,textarea')&&!l.closest('[hidden]'));}
  function wizard(form){
   if(form.dataset.mobileWizard)return;form.dataset.mobileWizard='true';form.noValidate=true;
@@ -104,6 +105,7 @@
    for(const item of nav.filter(n=>!n.key)){grid.append(tile(item.label,'report',()=>{route={page:'Integrações',maintenance:true};stack.push({home:true});item.button.click();}));}
    const account=nav.find(n=>n.key==='Integrações');if(account&&(route.menu||role!=='Comandante da Guarda'))grid.append(tile('Minha conta','link',()=>navigate({page:'Integrações',account:true})));
    paginateTiles(grid);
+  }else if(route.missionId){title.textContent='Minha missão';body.innerHTML=missionPanel(route.missionId);body.querySelector('[data-mission-return]')?.addEventListener('click',e=>showAction(e.currentTarget.dataset.missionReturn,'return'));
   }else if(route.account){
    title.textContent='Minha conta';body.innerHTML='<span class="ma-role">'+esc(role)+'</span><h1>'+esc(state.user.name)+'</h1><p>Seu perfil determina as funções disponíveis.</p>';
    const logout=make('button','secondary',svg('logout',20)+' Sair da conta');logout.type='button';logout.onclick=()=>window.cep4Logout();body.append(logout);
