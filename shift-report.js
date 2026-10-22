@@ -28,7 +28,7 @@ function shiftReportPeriod(start,end){
   };
   controls.append(view,download,print);target.append(controls);
  }
- const oldControls=reportControls;reportControls=function(){return oldControls().replace('Gerar PDF do plantão no Drive','Gerar relatório do plantão');};
+ const oldControls=reportControls;reportControls=function(){return oldControls().replace('Gerar PDF do plantão no Drive','Gerar relatório do plantão').replace('Lista única com viatura, destino, saída e situação: Em missão ou Finalizado.','Movimentações com motorista, matrícula, destino, saída e retorno. Situação: Em missão, Aguardando conferência ou Finalizado.');};
  const oldBind=bind;bind=function(){oldBind();
   for(const [id,key] of [['report-start','start'],['report-end','end']])document.querySelector('#'+id)?.addEventListener('input',e=>{if(key==='start')reportStart=e.target.value;else reportEnd=e.target.value;});
   const original=document.querySelector('#period-pdf');if(!original)return;

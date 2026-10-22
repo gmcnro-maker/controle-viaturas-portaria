@@ -20,7 +20,7 @@ function showAction(id,action){
   event.preventDefault();const form=event.target,button=form.querySelector('button[type=submit]'),fields=new FormData(form),data=reading?{final:fields.get('final')}:{};
   if(correction){data.reason=fields.get('reason');}
   const errorBox=form.querySelector('[role=alert]')||form.insertBefore(Object.assign(document.createElement('p'),{className:'dialog-error'}),form.querySelector('.button-row'));errorBox.setAttribute('role','alert');errorBox.hidden=true;button.disabled=true;
-  try{if(action==='return'){data.photo=await readOdometerPhoto(form.elements.odometerPhoto.files[0]);Object.assign(data,await collectInspection(form));}const result=await api(`trips/${id}/${action}`,data);dialog.close();await refresh();notify(result.warning||'Movimentação atualizada.');}
+  try{if(action==='return'){data.photo=await readOdometerPhoto(form.elements.odometerPhoto.files[0]);Object.assign(data,await collectInspection(form));}const result=await api(`trips/${id}/${action}`,data);dialog.close();try{await refresh();notify(result.warning||(action==='return'?'Retorno registrado. Aguarde a conferência da Guarda.':'Movimentação atualizada.'));}catch{notify('Registro salvo. A consulta não atualizou agora; use Atualizar registros. Não é necessário enviar novamente.');}}
   catch(error){errorBox.textContent=error.message;errorBox.hidden=false;}finally{delete data.adminPassword;button.disabled=false;}
  };
 }
