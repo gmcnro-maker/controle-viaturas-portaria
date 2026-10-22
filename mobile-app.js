@@ -102,14 +102,15 @@
   function tile(label,icon,handler,primary=false){const b=make('button','ma-tile'+(primary?' ma-primary':''),svg(icon,27)+'<span>'+esc(label)+'</span>');b.type='button';b.onclick=handler;return b;}
   if(route.home||route.menu){
    title.textContent=route.menu?'Funções':'Início';body.innerHTML='<span class="ma-role">'+esc(role)+'</span><h1>'+(route.menu?'Escolha uma função':'O que deseja fazer?')+'</h1><div class="ma-tiles"></div>';
-   const grid=body.querySelector('.ma-tiles');
-   if((!route.menu||appOnly())&&(role==='Motorista'||uiPermit('trips.create')))grid.append(tile(role==='Motorista'?'SAÍDA':'Solicitar saída','plus',()=>navigate({page:'Movimentações',taskLabel:'Solicitar saída'}),true));
+   const grid=body.querySelector('.ma-tiles'),internalRoot=appOnly()&&!route.checklist;
+   if(internalRoot)grid.append(tile('Check-list','car',()=>navigate({menu:true,checklist:true}),true));
+   if(!internalRoot&&(!route.menu||appOnly())&&(role==='Motorista'||uiPermit('trips.create')))grid.append(tile(role==='Motorista'?'SAÍDA':'Solicitar saída','plus',()=>navigate({page:'Movimentações',taskLabel:'Solicitar saída'}),true));
    const ordered=nav.filter(n=>!appOnly()&&n.key&&n.key!=='Painel'&&n.key!=='Integrações'&&(route.menu||role!=='Motorista'||n.key!=='Relatórios')&&(route.menu||role!=='Comandante da Guarda'||!['Viaturas','Policiais'].includes(n.key)));
    if(!route.menu&&role==='Comandante da Guarda')ordered.sort((a,b)=>(a.key==='Comandante da Guarda'?-1:b.key==='Comandante da Guarda'?1:0));
    if(!route.menu&&role==='Administrador'){const priority=['Acessos','Viaturas','Movimentações','Relatórios'];ordered.sort((a,b)=>(priority.includes(a.key)?priority.indexOf(a.key):99)-(priority.includes(b.key)?priority.indexOf(b.key):99));}
    for(const item of ordered){const label=item.key==='Movimentações'?(role==='Motorista'?'Minhas missões':'Missões'):item.key==='Comandante da Guarda'?'Autorizar saída':item.label;grid.append(tile(label,item.key==='Viaturas'?'car':item.key==='Acessos'?'users':item.key==='Relatórios'?'report':item.key==='Comandante da Guarda'?'shield':'arrows',()=>navigate({page:item.key,...(item.key==='Comandante da Guarda'?{taskLabel:'Autorizar saída'}:item.key==='Movimentações'?{taskLabel:role==='Motorista'?'Minhas movimentações':'Movimentações da frota'}:{})}),!grid.children.length));}
-   if(role==='Motorista'){if(!route.menu||appOnly())grid.append(tile('RETORNO','car',openDriverReturn));if(!appOnly())grid.append(tile('Status das viaturas','car',()=>navigate({page:'Painel',fleet:true})));}
-   if(typeof reservationUiCreate==='function'&&(reservationUiCreate()||reservationUiManager()))grid.append(tile(appOnly()?'Reserva de viatura':'Reservas','clock',()=>showAction('','reservations')));
+   if(role==='Motorista'&&!internalRoot){if(!route.menu||appOnly())grid.append(tile('RETORNO','car',openDriverReturn));if(!appOnly())grid.append(tile('Status das viaturas','car',()=>navigate({page:'Painel',fleet:true})));}
+   if(!route.checklist&&typeof reservationUiCreate==='function'&&(reservationUiCreate()||reservationUiManager()))grid.append(tile(appOnly()?'Reserva de viatura':'Reservas','clock',()=>showAction('','reservations')));
    if(!route.menu&&role==='Comandante da Guarda')grid.append(tile('Conferir entrada','check',()=>navigate({page:'Comandante da Guarda',taskLabel:'Conferir entrada'})));
    for(const item of nav.filter(n=>!n.key)){grid.append(tile(item.label,'report',()=>{route={page:'Integrações',maintenance:true};stack.push({home:true});item.button.click();}));}
    const account=nav.find(n=>n.key==='Integrações');if(account&&!appOnly()&&(route.menu||!['Comandante da Guarda','Motorista'].includes(role)))grid.append(tile('Minha conta','link',()=>navigate({page:'Integrações',account:true})));
@@ -135,7 +136,8 @@
     if(fileRows.length>1)paginateItems(fileRows,selected.node);
     if(route.maintenance){const observer=new MutationObserver(()=>{if(document.querySelector('#maintenance-body:not([hidden])')){document.querySelectorAll('#maintenance-body form').forEach(wizard);observer.disconnect();}});observer.observe(main,{subtree:true,attributes:true,attributeFilter:['hidden']});}
    }else{
-    body.innerHTML='<h1>'+esc(title.textContent)+'</h1><div class="ma-tiles"></div>';const grid=body.querySelector('.ma-tiles');tasks.forEach((t,i)=>grid.append(tile(t.label,t.icon,()=>navigate({...route,taskIndex:i,taskLabel:undefined}))));paginateTiles(grid);
+    body.innerHTML='<h1>'+esc(title.textContent)+'</h1><div class="ma-tiles"></div>';const grid=body.querySelector('.ma-tiles'),internalRoot=appOnly()&&!route.checklist;
+   if(internalRoot)grid.append(tile('Check-list','car',()=>navigate({menu:true,checklist:true}),true));tasks.forEach((t,i)=>grid.append(tile(t.label,t.icon,()=>navigate({...route,taskIndex:i,taskLabel:undefined}))));paginateTiles(grid);
     if(!tasks.length){body.append(main);main.className='ma-content';main.querySelectorAll('.page-heading,.main-footer,.workspace-context').forEach(n=>n.classList.add(hiddenClass));}
    }
   }
