@@ -1,0 +1,30 @@
+/* Identidade institucional na entrada, sem interferir nos formulários de operação. */
+#login-panel[hidden]{display:none!important}
+#login-panel.login{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(370px,.92fr);min-height:100svh;background:#f4f7fb}
+#login-panel .ce-intro{padding:0 0 2.5rem;background:#030d20;min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:0}
+#login-panel .ce-wallpaper{display:block;width:100%;height:auto;max-height:65svh;object-fit:contain;flex-shrink:1}
+#login-panel .ce-intro-caption{padding:1rem 2rem 0;text-align:center;max-width:38rem}
+#login-panel .ce-intro-caption .eyebrow{font-size:.85rem;letter-spacing:.12em;line-height:1.6;color:#b5cce5;margin:0 0 1rem}
+#login-panel .ce-intro-caption h1{font-size:clamp(2rem,3.4vw,3.3rem);line-height:1.15;margin:0 0 .75rem;color:white}
+#login-panel .ce-intro-caption p:last-child{font-size:1.05rem;line-height:1.6;color:#cedaea;margin:0}
+#login-panel .loginbox{align-self:center;width:100%;max-width:34rem;padding:2.5rem clamp(1.5rem,4vw,4rem);margin:auto;box-sizing:border-box}
+#login-panel .loginbox h1{font-size:clamp(1.8rem,2.6vw,2.5rem);line-height:1.2}
+#login-panel #police-login{display:grid;gap:.75rem;margin:1.5rem 0 1rem}
+#login-panel #police-login label{font-size:1rem;margin:0;line-height:1.5}
+#login-panel #police-login input,#login-panel #police-login button{min-height:3.1rem;font-size:1rem}
+#login-panel #police-login [data-police-help]{font-size:.9rem;line-height:1.5;margin:.2rem 0;color:#536780}
+#login-panel .loginbox details{padding:.55rem 0;font-size:1rem;line-height:1.5}
+#login-panel .loginbox summary{cursor:pointer}
+@media(max-width:700px){
+ #login-panel.login{display:block}
+ #login-panel .ce-intro{min-height:0;padding:.5rem 0 1.1rem}
+ #login-panel .ce-wallpaper{width:100%;height:9rem;object-fit:contain;max-height:none}
+ #login-panel .ce-intro-caption{padding:0 1rem}
+ #login-panel .ce-intro-caption .eyebrow{display:none}
+ #login-panel .ce-intro-caption h1{font-size:1.8rem;margin:0}
+ #login-panel .ce-intro-caption p:last-child{display:none}
+ #login-panel .loginbox{padding:1.5rem;max-width:34rem}
+ #login-panel .loginbox>.eyebrow{display:none}
+ #login-panel .loginbox h1{font-size:1.65rem}
+}
+@media(prefers-reduced-motion:reduce){#login-panel *{scroll-behavior:auto}}

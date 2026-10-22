@@ -1,6 +1,6 @@
-/* Apenas celular. O desktop conserva a apresentação aprovada. */
+/* Navegação do app: celular e policiais do CE em qualquer tamanho de tela. */
 .ma-shell{display:none}
-@media(max-width:700px){
+@media screen{
  body.ma-enabled{height:100dvh;overflow:hidden;background:#f3f7fc}
  .ma-enabled #app>.layout,.ma-enabled .mobile-dock,.ma-enabled .menu-veil,.ma-enabled .skip-content{display:none!important}
  .ma-enabled #app{height:100dvh}
@@ -39,3 +39,8 @@
 }
 @media(prefers-reduced-motion:reduce){.ma-forward,.ma-back{animation:none!important}}
 @media print{.ma-enabled .ma-shell{display:block!important;height:auto!important;overflow:visible!important}.ma-enabled .ma-brand,.ma-enabled .ma-top,.ma-enabled .ma-bottom,.ma-enabled .ma-pager,.ma-enabled .ma-form-controls{display:none!important}.ma-enabled .ma-stage{overflow:visible!important}.ma-enabled .ma-content table tr.ma-hidden{display:table-row!important}.ma-enabled{height:auto!important;overflow:visible!important}}
+
+@media(min-width:701px){body.ma-forced{background:#0d2c4e}body.ma-forced #app{max-width:40rem;margin:0 auto;box-shadow:0 0 40px #0003}body.ma-forced .ma-content table thead{display:none}body.ma-forced .ma-content table tr{display:grid;grid-template-columns:1fr;white-space:normal}body.ma-forced .ma-content table td{display:block;white-space:normal}}
+
+.ma-enabled .ma-body{min-width:0;width:100%;box-sizing:border-box}.ma-enabled .ma-tiles{min-width:0}.ma-enabled .ma-tile{min-width:0;width:100%;box-sizing:border-box}.ma-enabled .ma-pager{min-width:0}
+.ma-enabled .ma-content{width:100%!important;box-sizing:border-box}.ma-enabled .ma-content .formgrid{width:100%;min-width:0}.ma-enabled .ma-body>*{min-width:0}

@@ -7,7 +7,7 @@
  const priorRefresh=refresh;refresh=async function(){generation++;busy++;try{await priorRefresh();dirty=false;}finally{busy--;}};
  async function check(){
   if(busy||document.hidden||!state?.user||document.querySelector('#action-dialog[open]')||dirty||document.querySelector('button[type=submit]:disabled'))return;
-  busy++;const started=generation;try{const next=await api('state');if(started!==generation||dirty||document.querySelector('#action-dialog[open]'))return;if(JSON.stringify(next)!==JSON.stringify(state)){state=next;render();}failures=0;}catch{failures=Math.min(failures+1,3);}finally{busy--;}
+  busy++;const started=generation;try{const next=await api('state');if(started!==generation||dirty||document.querySelector('#action-dialog[open]'))return;if(JSON.stringify(next)!==JSON.stringify(state)){state=next;render();}failures=0;}catch(error){if(/Acesso bloqueado pela gestão|Acesso desativado|Perfil personalizado desativado/.test(error.message||'')){await window.cep4Logout();document.querySelector('#login-message').textContent=error.message;}else failures=Math.min(failures+1,3);}finally{busy--;}
  }
  async function loop(){await check();setTimeout(loop,15000*(failures+1));}setTimeout(loop,15000);
  window.addEventListener('focus',check);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});

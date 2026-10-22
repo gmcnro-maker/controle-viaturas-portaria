@@ -1,6 +1,8 @@
 /* Navegação móvel sobre os formulários existentes; sem duplicar operações ou permissões. */
 (()=>{
  const media=matchMedia('(max-width:700px)'),desktopRender=render;
+ const appOnly=()=>state?.user?.role==='Motorista'&&state?.access?.internal===true;
+ const appLayout=()=>media.matches||appOnly();
  let route={home:true},stack=[],direction='forward',owner='',tasks=[],activeTask=null;
  const hiddenClass='ma-hidden';
  const make=(tag,cls,html)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(html!==undefined)n.innerHTML=html;return n;};
@@ -101,16 +103,16 @@
   if(route.home||route.menu){
    title.textContent=route.menu?'Funções':'Início';body.innerHTML='<span class="ma-role">'+esc(role)+'</span><h1>'+(route.menu?'Escolha uma função':'O que deseja fazer?')+'</h1><div class="ma-tiles"></div>';
    const grid=body.querySelector('.ma-tiles');
-   if(!route.menu&&(role==='Motorista'||uiPermit('trips.create')))grid.append(tile(role==='Motorista'?'SAÍDA':'Solicitar saída','plus',()=>navigate({page:'Movimentações',taskLabel:'Solicitar saída'}),true));
-   const ordered=nav.filter(n=>n.key&&n.key!=='Painel'&&n.key!=='Integrações'&&(route.menu||role!=='Motorista'||n.key!=='Relatórios')&&(route.menu||role!=='Comandante da Guarda'||!['Viaturas','Policiais'].includes(n.key)));
+   if((!route.menu||appOnly())&&(role==='Motorista'||uiPermit('trips.create')))grid.append(tile(role==='Motorista'?'SAÍDA':'Solicitar saída','plus',()=>navigate({page:'Movimentações',taskLabel:'Solicitar saída'}),true));
+   const ordered=nav.filter(n=>!appOnly()&&n.key&&n.key!=='Painel'&&n.key!=='Integrações'&&(route.menu||role!=='Motorista'||n.key!=='Relatórios')&&(route.menu||role!=='Comandante da Guarda'||!['Viaturas','Policiais'].includes(n.key)));
    if(!route.menu&&role==='Comandante da Guarda')ordered.sort((a,b)=>(a.key==='Comandante da Guarda'?-1:b.key==='Comandante da Guarda'?1:0));
    if(!route.menu&&role==='Administrador'){const priority=['Acessos','Viaturas','Movimentações','Relatórios'];ordered.sort((a,b)=>(priority.includes(a.key)?priority.indexOf(a.key):99)-(priority.includes(b.key)?priority.indexOf(b.key):99));}
    for(const item of ordered){const label=item.key==='Movimentações'?(role==='Motorista'?'Minhas missões':'Missões'):item.key==='Comandante da Guarda'?'Autorizar saída':item.label;grid.append(tile(label,item.key==='Viaturas'?'car':item.key==='Acessos'?'users':item.key==='Relatórios'?'report':item.key==='Comandante da Guarda'?'shield':'arrows',()=>navigate({page:item.key,...(item.key==='Comandante da Guarda'?{taskLabel:'Autorizar saída'}:item.key==='Movimentações'?{taskLabel:role==='Motorista'?'Minhas movimentações':'Movimentações da frota'}:{})}),!grid.children.length));}
-   if(role==='Motorista'){if(!route.menu)grid.append(tile('RETORNO','car',openDriverReturn));grid.append(tile('Status das viaturas','car',()=>navigate({page:'Painel',fleet:true})));}
-   if(typeof reservationUiCreate==='function'&&(reservationUiCreate()||reservationUiManager()))grid.append(tile('Reservas','clock',()=>showAction('','reservations')));
+   if(role==='Motorista'){if(!route.menu||appOnly())grid.append(tile('RETORNO','car',openDriverReturn));if(!appOnly())grid.append(tile('Status das viaturas','car',()=>navigate({page:'Painel',fleet:true})));}
+   if(typeof reservationUiCreate==='function'&&(reservationUiCreate()||reservationUiManager()))grid.append(tile(appOnly()?'Reserva de viatura':'Reservas','clock',()=>showAction('','reservations')));
    if(!route.menu&&role==='Comandante da Guarda')grid.append(tile('Conferir entrada','check',()=>navigate({page:'Comandante da Guarda',taskLabel:'Conferir entrada'})));
    for(const item of nav.filter(n=>!n.key)){grid.append(tile(item.label,'report',()=>{route={page:'Integrações',maintenance:true};stack.push({home:true});item.button.click();}));}
-   const account=nav.find(n=>n.key==='Integrações');if(account&&(route.menu||!['Comandante da Guarda','Motorista'].includes(role)))grid.append(tile('Minha conta','link',()=>navigate({page:'Integrações',account:true})));
+   const account=nav.find(n=>n.key==='Integrações');if(account&&!appOnly()&&(route.menu||!['Comandante da Guarda','Motorista'].includes(role)))grid.append(tile('Minha conta','link',()=>navigate({page:'Integrações',account:true})));
    paginateTiles(grid);
   }else if(route.fleet){title.textContent='Status das viaturas';body.innerHTML=driverFleetPanel();bindDriverFleet(body);
   }else if(route.missionId){title.textContent='Minha missão';body.innerHTML=missionPanel(route.missionId);body.querySelector('[data-mission-return]')?.addEventListener('click',e=>showAction(e.currentTarget.dataset.missionReturn,'return'));
@@ -144,17 +146,20 @@
  function paginateTiles(grid){const items=[...grid.children];if(items.length>4)paginateItems(items,grid.parentElement,4);}
  render=function(){
   const uid=(state?.user?.googleUid||state?.user?.id||'')+'|'+(state?.user?.role||'');if(uid!==owner){owner=uid;route={home:true};stack=[];}
-  document.body.classList.remove('ma-enabled');desktopRender();
-  if(media.matches&&state){if(state.needsDriverRegistration){const form=document.querySelector('#driver-registration');if(form)wizard(form);}else mount();}
+  document.body.classList.remove('ma-enabled');document.body.classList.toggle('ma-forced',appOnly());desktopRender();
+  if(appLayout()&&state){if(state.needsDriverRegistration){const form=document.querySelector('#driver-registration');if(form)wizard(form);}else mount();}
  };
- const previousClear=window.cep4Clear;window.cep4Clear=()=>{route={home:true};stack=[];document.body.classList.remove('ma-enabled');previousClear();};
+ const previousClear=window.cep4Clear;window.cep4Clear=()=>{route={home:true};stack=[];document.body.classList.remove('ma-enabled','ma-forced');previousClear();};
  media.addEventListener('change',()=>{if(state){document.querySelector('#action-dialog')?.close();render();}});
- const originalAction=showAction;showAction=function(...args){originalAction(...args);if(media.matches){const form=document.querySelector('#action-dialog form');if(form){wizard(form);animate(form);}}};
+ const originalAction=showAction;showAction=function(...args){originalAction(...args);if(appLayout()){const form=document.querySelector('#action-dialog form');if(form){wizard(form);animate(form);}}};
  // Edição de um item abre seu formulário em vez de deixá-lo escondido na lista.
  document.addEventListener('click',e=>{
-  if(!media.matches||!document.querySelector('.ma-shell'))return;
+  if(!appLayout()||!document.querySelector('.ma-shell'))return;
   const edit=e.target.closest('[data-access],[data-profile-edit]');
   if(edit){setTimeout(()=>{if(!document.querySelector('.ma-shell'))return;const form=document.querySelector(edit.hasAttribute('data-access')?'#access-form':'#profile-form');if(!form)return;stack.push({...route});route={page,taskLabel:form.id==='access-form'?'Autorizar acesso':'Criar ou editar perfil'};const main=document.querySelector('.ma-content')||document.querySelector('.layout main');main?.querySelectorAll('.ma-hidden').forEach(n=>n.classList.remove('ma-hidden'));const shellBody=document.querySelector('.ma-body');shellBody.innerHTML='';shellBody.append(main);main.className='ma-content';showOnly(form,main);document.querySelector('.ma-shell [data-ma-title]').textContent='Editar cadastro';wizard(form);animate(main);},0);}
  });
 })();
+
+
+
 

@@ -1,5 +1,5 @@
 (()=>{
- function eligibleUsers(){return state.users.filter(u=>!u.deleted&&u.googleUid&&u.role!=='Motorista'&&u.email.endsWith('@acesso.cep4.invalid'));}
+ function eligibleUsers(){return state.users.filter(u=>!u.deleted&&u.googleUid&&/@(?:acesso|matricula)\.cep4\.invalid$/.test(u.email));}
  function openPasswords(selected=''){
   const dialog=document.querySelector('#action-dialog'),users=eligibleUsers();
   dialog.innerHTML='<form id="password-change-form"><h2>Alteração de senhas</h2><label>Login<select name="userId" required><option value="">Selecione o usuário</option>'+users.map(u=>'<option value="'+esc(u.id)+'" '+(u.id===selected?'selected':'')+'>'+esc(u.email.split('@')[0])+(u.active?'':' · Inativo')+'</option>').join('')+'</select></label><label>Nova senha<input name="newPassword" type="password" required minlength="6" maxlength="128" autocomplete="new-password" placeholder="Mínimo de 6 caracteres"></label><p id="password-change-error" role="alert"></p><div class="button-row"><button type="button" class="secondary" data-cancel-password>Fechar</button><button type="submit">Salvar</button></div></form>';
@@ -20,7 +20,7 @@
   const box=document.createElement('div');box.innerHTML=section();
   if(state.user.role==='Administrador'&&!state.user.customRole)box.querySelectorAll('[data-access]').forEach(edit=>{
    const u=state.users.find(u=>u.id===edit.dataset.access);
-   if(!u||u.deleted||!u.googleUid||u.role==='Motorista'||!u.email.endsWith('@acesso.cep4.invalid'))return;
+   if(!u||u.deleted||!u.googleUid||!/@(?:acesso|matricula)\.cep4\.invalid$/.test(u.email))return;
    const button=document.createElement('button');button.type='button';button.className='secondary';button.dataset.passwordUser=u.id;button.textContent='Alterar senha';edit.after(document.createTextNode(' '),button);
   });return box.innerHTML;
  };
