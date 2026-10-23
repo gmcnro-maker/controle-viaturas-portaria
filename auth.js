@@ -6,7 +6,7 @@ const trustedOrigin=origin=>{try{const u=new URL(origin);return u.protocol==='ht
 function receive(event){
  const data=event.data;if(!data||data.channel!==channel||!trustedOrigin(event.origin))return;
  if(data.type==='CEP4_READY'){
-  if(peer&&peer!==event.source)return;peer=event.source;peerOrigin=event.origin;button.disabled=false;message.textContent='Policiais: matrícula e senha. Gestão: usuário e senha.';return;
+  if(peer&&peer!==event.source)return;peer=event.source;peerOrigin=event.origin;button.disabled=false;message.textContent='Entre com Google. No primeiro acesso, preencha seu cadastro.';return;
  }
  if(data.type!=='CEP4_RESULT'||event.source!==peer||event.origin!==peerOrigin)return;
  const entry=pending.get(data.id);if(!entry)return;pending.delete(data.id);clearTimeout(entry.timer);
@@ -15,6 +15,7 @@ function receive(event){
 window.addEventListener('message',receive);
 window.cep4Api=async(path,input)=>{
  if(!current||!peer)throw Error('Entre na sua conta para continuar.');
+ if(window.cep4Consumer)input={...(input||{}),consumer:true};
  const publicInput={...(input||{})};delete publicInput.adminPassword;
  const key=JSON.stringify({uid:current.uid,path,input:publicInput});let operationId=retries.get(key);
  if(input&&!operationId){operationId=crypto.randomUUID();retries.set(key,operationId);}
@@ -25,7 +26,7 @@ window.cep4Api=async(path,input)=>{
   peer.postMessage({type:'CEP4_RPC',channel,id,path,input:input||{},operationId:operationId||null,token},peerOrigin);
  });
 };
-window.cep4Logout=async()=>{current=null;retries.clear();for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Sessão encerrada.'));}pending.clear();await signOut(auth);window.cep4Clear();};
+window.cep4Logout=async()=>{try{await window.cep4BeforeLogout?.();}catch(e){}document.querySelectorAll('.ce-access-dialog').forEach(d=>{d.close();d.remove();});window.cep4Consumer=false;current=null;retries.clear();for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Sessão encerrada.'));}pending.clear();await signOut(auth);window.cep4Clear();};
 async function boot(){
  if(!settings?.firebase?.apiKey||!settings.firebase.projectId||!settings.firebase.authDomain||!settings.firebase.appId)throw Error('O responsável ainda precisa configurar o login Google. Nenhum dado pode ser enviado.');
  const endpoint=new URL(settings.webAppUrl);if(endpoint.origin!=='https://script.google.com'||!endpoint.pathname.endsWith('/exec'))throw Error('Endereço do serviço CEP4 inválido.');
@@ -33,8 +34,8 @@ async function boot(){
  const police=document.createElement('form');police.id='police-login';police.innerHTML='<label>Matrícula<input name="registration" inputmode="numeric" pattern="[0-9]{3,20}" minlength="3" maxlength="20" required autocomplete="username"></label><label>Senha<input name="password" type="password" required minlength="6" maxlength="128" autocomplete="current-password"></label><button type="submit">Entrar</button><button type="button" class="secondary" data-create-police>Criar conta</button><p data-police-help>Primeiro acesso? Crie sua conta. O vínculo com o CE é validado por P4/Admin.</p>';button.before(police);window.cep4EnhancePasswords(police);
  let creating=false;police.querySelector('[data-create-police]').onclick=()=>{creating=!creating;police.querySelector('[type=submit]').textContent=creating?'Criar conta e continuar':'Entrar';police.querySelector('[data-create-police]').textContent=creating?'Já tenho conta':'Criar conta';police.elements.password.autocomplete=creating?'new-password':'current-password';};
  police.onsubmit=async event=>{event.preventDefault();const submit=police.querySelector('[type=submit]');submit.disabled=true;try{if(!peer)throw Error('Aguarde a conexão com o sistema.');const registration=police.elements.registration.value.trim();if(!/^\d{3,20}$/.test(registration))throw Error('Informe a matrícula usando somente números.');const email=registration+'@matricula.cep4.invalid',password=police.elements.password.value;const credential=creating?await createUserWithEmailAndPassword(auth,email,password):await signInWithEmailAndPassword(auth,email,password);current=credential.user;await window.cep4Load();}catch(error){current=null;await signOut(auth);window.cep4Clear();message.textContent=error.code==='auth/invalid-credential'?'Matrícula ou senha não conferem.':error.code==='auth/email-already-in-use'?'Já existe uma conta para esta matrícula. Use Entrar ou procure P4/Admin.':error.code==='auth/too-many-requests'?'Muitas tentativas. Aguarde antes de tentar novamente.':error.message;}finally{police.elements.password.value='';submit.disabled=false;}};
- const oldGoogle=document.createElement('details');oldGoogle.innerHTML='<summary>Já possuo acesso pelo Google</summary>';button.before(oldGoogle);oldGoogle.append(button);
- const p4=document.createElement('form');p4.innerHTML='<details><summary>Administrador, P4 e Guarda</summary><label>Usuário<input name="email" type="text" required autocomplete="username" pattern="[A-Za-z0-9._-]{3,40}" maxlength="40"></label><label>Senha<input name="password" type="password" required autocomplete="current-password"></label><button type="submit">Entrar</button></details>';oldGoogle.before(p4);window.cep4EnhancePasswords(p4);
+ const internalEntry=document.createElement('details');internalEntry.className='ce-internal-login';internalEntry.innerHTML='<summary>Acesso interno</summary>';button.after(internalEntry);internalEntry.append(police);
+ const p4=document.createElement('form');p4.innerHTML='<details><summary>Administrador, P4 e Guarda</summary><label>Usuário<input name="email" type="text" required autocomplete="username" pattern="[A-Za-z0-9._-]{3,40}" maxlength="40"></label><label>Senha<input name="password" type="password" required autocomplete="current-password"></label><button type="submit">Entrar</button></details>';internalEntry.append(p4);window.cep4EnhancePasswords(p4);
  p4.onsubmit=async event=>{event.preventDefault();const submit=p4.querySelector('button[type=submit]');submit.disabled=true;try{if(!peer)throw Error('Aguarde a conexão com o CEP4.');const credential=await signInWithEmailAndPassword(auth,p4.elements.email.value.trim().toLowerCase()+'@acesso.cep4.invalid',p4.elements.password.value);current=credential.user;await window.cep4Load();}catch(error){current=null;await signOut(auth);window.cep4Clear();message.textContent=error.message;}finally{p4.elements.password.value='';submit.disabled=false;}};
  channel=crypto.randomUUID();endpoint.searchParams.set('channel',channel);frame.src=endpoint.href;
  button.onclick=async()=>{button.disabled=true;try{
