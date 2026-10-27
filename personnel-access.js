@@ -3,7 +3,7 @@
  const previousActionButton=actionButton;actionButton=function(t){const html=previousActionButton(t);return t.allocationId&&t.status==='Aguardando saída'?html.replace('Autorizar saída','Efetivar'):html;};
  const previousAction=showAction;showAction=function(id,action){previousAction(id,action);if(action==='confirm-exit'&&state.trips.find(t=>t.id===id)?.allocationId){const f=document.querySelector('#action-form');if(f){f.querySelector('h2').textContent='Efetivar retirada da viatura';f.querySelector('[type=submit]').textContent='Efetivar';f.elements.expectedReturn?.closest('label')?.remove();}}};
  let lookupSerial=0,externalScreen='home',externalOwner='';
- const manager=()=>!state?.user?.customRole&&['Administrador','Supervisor da Frota - P4'].includes(state?.user?.role);
+ const manager=()=>!state?.user?.customRole&&!state?.user?.governing&&state?.user?.role==='Administrador';
  const local=v=>v?new Date(Date.parse(v)-14400000).toISOString().slice(0,16):'';
  const iso=v=>v+':00-04:00';
  const field=(name,label,type='text',value='',required=true)=>'<label>'+label+'<input name="'+name+'" type="'+type+'" '+(required?'required':'')+' maxlength="'+(name==='reason'?500:180)+'" value="'+esc(value)+'"></label>';
