@@ -101,7 +101,8 @@
  function wire(root){root.querySelectorAll('[data-room-group]').forEach(b=>b.onclick=()=>{roomGroup=b.dataset.roomGroup;recordIndex=0;paint();});root.querySelectorAll('[data-l-action]').forEach(b=>b.onclick=()=>act(b.dataset.lAction,b.dataset.id).catch(e=>notify(e.message)));}
  window.cep4OpenNotice=function(notice){module=notice.category==='alojamentos'?'lodging':'vehicles';window.cep4CurrentModule=module;view='active';render();};
  const clear=window.cep4Clear;window.cep4Clear=function(){serial++;data=null;owner='';module='home';window.cep4CurrentModule='home';if(pdfUrl)URL.revokeObjectURL(pdfUrl);pdfUrl='';clear();};
- setInterval(()=>{if(module==='lodging'&&state&&!busy&&!document.querySelector('#action-dialog[open]'))load();},15000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&module==='lodging'&&state&&!busy&&!document.querySelector('dialog[open]'))load();});
+ setInterval(()=>{if(module==='lodging'&&state&&!document.hidden&&!busy&&!document.querySelector('dialog[open]'))load();},15000);
 })();
 
 

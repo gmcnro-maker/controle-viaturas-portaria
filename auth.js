@@ -14,7 +14,7 @@ function receive(event){
 }
 window.addEventListener('message',receive);
 window.cep4Installation=()=>{let id=localStorage.getItem('ce-installation');if(!id){id=crypto.randomUUID();localStorage.setItem('ce-installation',id);}return id;};
-window.cep4Api=async(path,input)=>{
+async function requestRpc(path,input){
  if(!current||!peer)throw Error('Entre na sua conta para continuar.');
  if(window.cep4Consumer)input={...(input||{}),consumer:true};
  input={...(input||{}),_installation:window.cep4Installation(),_surface:window.cep4AppSurface?'app':'desktop'};
@@ -28,7 +28,10 @@ window.cep4Api=async(path,input)=>{
   peer.postMessage({type:'CEP4_RPC',channel,id,path,input:input||{},operationId:operationId||null,token},peerOrigin);
  });
 };
-window.cep4Logout=async()=>{try{await window.cep4BeforeLogout?.();}catch(e){}document.querySelectorAll('.ce-access-dialog').forEach(d=>{d.close();d.remove();});window.cep4Consumer=false;current=null;retries.clear();for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Sessão encerrada.'));}pending.clear();await signOut(auth);window.cep4Clear();};
+// Compartilha somente consultas idênticas ainda em andamento; nunca guarda respostas de sessão.
+const readFlights=new Map(),readRoutes=new Set(['state','lodging/state','notifications/state','sections/state','offers/state','personnel/lists','external/state']);
+window.cep4Api=(path,input)=>{if(!readRoutes.has(path))return requestRpc(path,input);const key=JSON.stringify([current?.uid,!!window.cep4Consumer,!!window.cep4AppSurface,path,input||{}]);if(readFlights.has(key))return readFlights.get(key);const promise=requestRpc(path,input).finally(()=>{if(readFlights.get(key)===promise)readFlights.delete(key);});readFlights.set(key,promise);return promise;};
+window.cep4Logout=async()=>{try{await window.cep4BeforeLogout?.();}catch(e){}document.querySelectorAll('.ce-access-dialog').forEach(d=>{d.close();d.remove();});window.cep4Consumer=false;current=null;readFlights.clear();retries.clear();for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Sessão encerrada.'));}pending.clear();await signOut(auth);window.cep4Clear();};
 async function boot(){
  if(!settings?.firebase?.apiKey||!settings.firebase.projectId||!settings.firebase.authDomain||!settings.firebase.appId)throw Error('O responsável ainda precisa configurar o login Google. Nenhum dado pode ser enviado.');
  const endpoint=new URL(settings.webAppUrl);if(endpoint.origin!=='https://script.google.com'||!endpoint.pathname.endsWith('/exec'))throw Error('Endereço do serviço CEP4 inválido.');
