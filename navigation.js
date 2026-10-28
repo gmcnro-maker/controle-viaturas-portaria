@@ -7,6 +7,7 @@
  function decorate(){
   const shell=app.querySelector('.ce-sections'),menu=shell?.querySelector('header .button-row'),main=shell?.querySelector('main');if(!menu||!main)return;
   if(owner!==state.user.id){owner=state.user.id;view='home';}
+  main.querySelector('nav[aria-label="Seções do Centro de Ensino"]')?.remove();
   main.addEventListener('click',e=>{if(e.target.closest('[data-ce-section]'))view='sections';},true);
   const store=document.createElement('div');store.className='ce-tool-store';store.hidden=true;shell.append(store);
   const people=[...menu.querySelectorAll('[data-ce-access],[data-review-externals],[data-internal-register]')];
@@ -15,15 +16,15 @@
   [...people,...settings,...services].forEach(b=>store.append(b));
   const sections=menu.querySelector('[data-ce-home]'),personal=menu.querySelector('[data-ce-personal]'),logout=menu.querySelector('[data-ce-logout]');
   const resetSection=sections?.onclick;
-  if(sections){label(sections,'Seções','sections');const action=sections.onclick;sections.onclick=e=>{view='sections';action(e);};}
-  if(personal)label(personal,'Meu acesso de usuário','user');if(logout)label(logout,'Sair','exit');
+  if(sections){label(sections,'Início','home');const action=sections.onclick;sections.onclick=e=>{view='home';action(e);};}
+  if(personal)label(personal,'Modo usuário','user');if(logout)label(logout,'Sair','exit');
   const nav=(name,key,next)=>{const b=document.createElement('button');b.type='button';b.dataset.ceNav=next;label(b,name,key);b.onclick=()=>{view=next;if(next==='home'&&resetSection)resetSection();else render();};return b;};
-  menu.prepend(nav('Início','home','home'));if(services.length)menu.insertBefore(nav('Serviços','services','services'),personal||logout);
+  if(services.length)menu.insertBefore(nav('Serviços','services','services'),personal||logout);
   if(people.length)menu.insertBefore(nav('Pessoas','people','people'),personal||logout);
   if(settings.length)menu.insertBefore(nav('Configurações','settings','settings'),logout);
   if(logout)menu.append(logout);
   menu.querySelectorAll('[data-ce-nav]').forEach(b=>{if(b.dataset.ceNav===view)b.setAttribute('aria-current','page');});
-  if(view==='sections')sections?.setAttribute('aria-current','page');
+  if(view==='sections'||view==='home')sections?.setAttribute('aria-current','page');
   if(['people','services','settings'].includes(view)){
    const group={people,services,settings}[view];
    if(!group.length){view='home';}else{
@@ -34,16 +35,12 @@
    }
   }
   if(view==='home'){
-   const list=document.createElement('div');list.className='ce-home-sections';while(main.firstChild)list.append(main.firstChild);
-   const heading=document.createElement('h2');heading.textContent='Seu painel';main.append(heading);
-   const intro=document.createElement('p');intro.textContent='Acesse suas áreas e acompanhe as pendências visíveis para o seu perfil.';main.append(intro);
+   const heading=main.querySelector('h2');if(heading)heading.textContent='Áreas de gestão';
+   const intro=main.querySelector('p');if(intro)intro.remove();
+   const names={guarda:'Guarda',p1:'Administração · P1',p4:'Patrimônio · P4',sjd:'Justiça e Disciplina · SJD',divens:'Ensino · DIVENS',dfae:'Formação · DFAE',comando:'Comando do CE'};
+   main.querySelectorAll('.ce-section-card').forEach(b=>{const full=b.querySelector('b');b.title=full?.textContent||'';if(full&&names[b.dataset.ceSection])full.textContent=names[b.dataset.ceSection];b.querySelector('small')?.remove();});
    const trips=state.trips||[],pending=trips.filter(t=>t.status==='Aguardando saída').length,returns=trips.filter(t=>t.status==='Aguardando entrada').length;
-   const quick=document.createElement('div');quick.className='ce-shortcuts';main.append(quick);
-   const shortcut=(text,key,action)=>{const b=document.createElement('button');b.type='button';label(b,text,key);b.onclick=action;quick.append(b);};
-   if(services.length)shortcut('Serviços','services',()=>{view='services';render();});
-   if(people.length)shortcut('Pessoas','people',()=>{view='people';render();});
-   if(pending||returns){const note=document.createElement('p');note.className='ce-task-summary';note.textContent=pending+' saída(s) aguardando autorização · '+returns+' retorno(s) aguardando conferência';main.append(note);}
-   main.append(list);
+   if(pending||returns){const note=document.createElement('p');note.className='ce-task-summary';note.textContent=pending+' saída(s) aguardando autorização · '+returns+' retorno(s) aguardando conferência';main.prepend(note);}
   }
  }
  render=function(){previous();decorate();};

@@ -23,3 +23,6 @@
 .ce-home-sections{margin-top:2rem}
 .ce-task-summary{padding:1rem 1.2rem;border:1px solid #b5d3f1;border-radius:12px;background:#edf5ff;color:#234a72}
 @media(max-width:700px){.ce-sections>header>.button-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.ce-sections>header .button-row>button{min-width:0;white-space:normal;text-align:left;padding:.75rem;font-size:.85rem}.ce-shortcuts{grid-template-columns:1fr}.ce-sections>header .button-row>[data-ce-logout]{order:100}}
+
+/* Uma única entrada de gestão, com cartões compactos e sem atalhos duplicados. */
+.ce-sections .ce-section-card{min-height:88px;padding:1rem;gap:.85rem}.ce-sections .ce-section-card svg{width:34px;height:34px}.ce-sections main>h2{margin-top:0;margin-bottom:1.2rem}
