@@ -40,3 +40,9 @@
 .ce-section-grid{gap:.75rem}
 @media(min-width:701px){.ce-sections>header>.button-row{gap:.45rem;padding:1rem .85rem}.ce-sections>header>.button-row>button{min-height:44px;padding:.6rem .8rem}}
 @media(max-width:700px){.ce-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.ce-shortcuts>button{min-width:0;white-space:normal}.ce-sections>header .button-row>button{padding:.6rem;min-height:44px}.ce-shortcuts>.ce-icon-action{flex-direction:column;min-height:66px}}
+/* Cartões de seção com largura limitada, sem esticar pela tela. */
+.ce-sections .ce-section-grid{grid-template-columns:repeat(auto-fill,minmax(145px,180px));gap:.7rem;justify-content:start}
+.ce-sections .ce-section-card{min-height:56px;padding:.65rem .75rem;justify-content:center;gap:.55rem}
+.ce-sections .ce-section-card svg{width:24px;height:24px}
+.ce-sections .ce-section-card b{font-size:.88rem;line-height:1.25}
+@media(max-width:400px){.ce-sections .ce-section-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ce-sections .ce-section-card{min-width:0;padding:.6rem .4rem}}
