@@ -26,3 +26,5 @@
 
 /* Uma única entrada de gestão, com cartões compactos e sem atalhos duplicados. */
 .ce-sections .ce-section-card{min-height:88px;padding:1rem;gap:.85rem}.ce-sections .ce-section-card svg{width:34px;height:34px}.ce-sections main>h2{margin-top:0;margin-bottom:1.2rem}
+
+.ce-icon-action{display:inline-flex;align-items:center;justify-content:center;gap:.75rem}.ce-icon-action>svg{width:32px;height:32px;flex:0 0 32px}.ce-shortcuts>.ce-icon-action{min-height:80px;justify-content:center}
