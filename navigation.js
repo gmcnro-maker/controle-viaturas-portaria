@@ -37,7 +37,7 @@
   if(view==='home'){
    const heading=main.querySelector('h2');if(heading)heading.textContent='Áreas de gestão';
    const intro=main.querySelector('p');if(intro)intro.remove();
-   const names={guarda:'Guarda',p1:'Administração · P1',p4:'Patrimônio · P4',sjd:'Justiça e Disciplina · SJD',divens:'Ensino · DIVENS',dfae:'Formação · DFAE',comando:'Comando do CE'};
+   const names={guarda:'Guarda',p1:'DIVADM-P1',p4:'DIVPTR-P4',sjd:'SJD',divens:'DIVENS',dfae:'DFAE',comando:'CMT CE'};
    main.querySelectorAll('.ce-section-card').forEach(b=>{const full=b.querySelector('b');b.title=full?.textContent||'';if(full&&names[b.dataset.ceSection])full.textContent=names[b.dataset.ceSection];b.querySelector('small')?.remove();});
    const trips=state.trips||[],pending=trips.filter(t=>t.status==='Aguardando saída').length,returns=trips.filter(t=>t.status==='Aguardando entrada').length;
    if(pending||returns){const note=document.createElement('p');note.className='ce-task-summary';note.textContent=pending+' saída(s) aguardando autorização · '+returns+' retorno(s) aguardando conferência';main.prepend(note);}
