@@ -5,3 +5,5 @@ body.ma-forced #app:has(>.pm-consumer-home){max-width:none;margin:0;box-shadow:n
 #app>.pm-consumer-home{margin:0;padding:0;max-width:none;width:100%;box-sizing:border-box}
 .pm-consumer-home>section{min-width:0;box-sizing:border-box}
 @media(max-width:900px){#app>.pm-consumer-home{display:block}.pm-consumer-hero{padding:.8rem 1rem;flex-direction:row;gap:1rem;text-align:left}.pm-consumer-hero img{width:90px;max-height:100px}.pm-consumer-hero h1{font-size:1.2rem;margin:0}.pm-consumer-services{padding:1rem}}
+
+.ce-notice-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;top:-24px;background:#fff;z-index:1;padding:.5rem 0}.ce-notice-header h2{margin:.3rem 0}.ce-notice-header button{min-height:44px}
