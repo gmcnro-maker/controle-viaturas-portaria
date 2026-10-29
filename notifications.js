@@ -3,8 +3,14 @@
 
  const noticeIcon=k=>'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+({bell:'M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4',x:'m6 6 12 12M18 6 6 18',check:'m4 12 5 5L20 6',phone:'M7 2h10v20H7zM10 18h4',mute:'m3 3 18 18M6 6v11H3m5 0h13l-3-4V8a6 6 0 0 0-9-5',settings:'M4 7h16M4 17h16M8 4v6m8 4v6',save:'M4 3h14l3 3v15H3V3Zm3 0v6h10V3M7 21v-7h10v7',arrow:'m9 5 7 7-7 7',car:'M3 16v-5l2-6h14l2 6v5M3 11h18M6 16v3m12-3v3',bed:'M3 5v16m18-11v11M3 15h18M3 10h18v5M6 7h5v3',user:'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-3a8 8 0 0 1 16 0'}[k]||'M12 5v8m0 4h.01')+'"/></svg>';
  const noticeClose=()=>'<button type="button" data-close class="secondary" aria-label="Fechar" title="Fechar">'+noticeIcon('x')+'</button>';
- function attach(){if(!state||state.needsDriverRegistration||state.needsPasswordChange){app.querySelectorAll("[data-ce-bell]").forEach(b=>b.remove());return;}const host=app.querySelector('.ce-sections>header>div:first-child,.pm-header .button-row,.pm-portal,.pm-consumer-services>.button-row,.ma-top,.topbar-right,.driver-onboarding>.panel');if(!host||host.querySelector('[data-ce-bell]'))return;const b=document.createElement('button');b.type='button';b.className='secondary ce-bell';b.dataset.ceBell='true';b.textContent='Notificações';b.onclick=open;host.append(b);update();if(!openFromPush&&new URLSearchParams(location.search).has('aviso')){openFromPush=true;setTimeout(open,0);}}
- function update(){const n=info?.items.filter(i=>!i.read).length||0;app.querySelectorAll('[data-ce-bell]').forEach(b=>{b.textContent='🔔'+(n?' '+n:'');b.setAttribute('aria-label','Notificações'+(n?', '+n+' não lidas':''));b.title='Notificações';});}
+ function attach(){
+  if(!state||state.needsDriverRegistration||state.needsPasswordChange){document.querySelectorAll('[data-ce-bell]').forEach(b=>b.remove());document.body.classList.remove('ce-has-bell');return;}
+  if(document.querySelector('[data-ce-bell]'))return;
+  const b=document.createElement('button');b.type='button';b.className='secondary ce-bell';b.dataset.ceBell='true';b.onclick=open;document.body.append(b);document.body.classList.add('ce-has-bell');update();
+  if(!openFromPush&&new URLSearchParams(location.search).has('aviso')){openFromPush=true;setTimeout(open,0);}
+ }
+
+ function update(){const n=info?.items.filter(i=>!i.read).length||0;document.querySelectorAll('[data-ce-bell]').forEach(b=>{b.innerHTML=noticeIcon('bell')+(n?'<span class="ce-bell-count">'+n+'</span>':'');b.setAttribute('aria-label','Notificações'+(n?', '+n+' não lidas':''));b.title='Notificações';});}
  async function load(){if(!state||pending)return;pending=true;const id=state.user.id;if(account!==id){account=id;info=null;}try{const next=await api('state');if(state?.user.id===id){info=next;update();}}catch(e){}finally{pending=false;}}
  async function open(){
   if(dialog?.isConnected&&dialog.open){dialog.focus();return;}
