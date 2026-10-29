@@ -17,6 +17,7 @@
   if(returns.length===1)showAction(returns[0].dataset.return,'return');
   else if(!returns.length)notify('Você não tem viatura em missão para registrar retorno.');
  }
+ window.cep4MobileReset=()=>{route={home:true};stack=[];activeTask=null;};
  window.cep4MobileMission=id=>navigate({page:'Movimentações',missionId:id});
  function fields(form){return [...form.querySelectorAll('label')].filter(l=>l.querySelector('input:not([type=hidden]),select,textarea')&&!l.closest('[hidden]'));}
  function wizard(form){
@@ -94,7 +95,7 @@
   shell.innerHTML='<header class="ma-brand">'+institutionalBrand()+'</header><div class="ma-top"><button type="button" class="secondary" data-ma-back>'+svg('arrow',18)+' Voltar</button><b data-ma-title></b><button type="button" class="icon-button" data-ma-refresh aria-label="Atualizar registros">'+svg('refresh',19)+'</button></div><div class="ma-stage"><div class="ma-body"></div></div><nav class="ma-bottom" aria-label="Navegação do celular"><button type="button" data-ma-home>'+svg('grid',21)+'<span>Início</span></button><button type="button" data-ma-account>'+svg('users',21)+'<span>Conta</span></button></nav>';
   app.append(shell);document.body.classList.add('ma-enabled');
   const body=shell.querySelector('.ma-body'),title=shell.querySelector('[data-ma-title]');shell.querySelector('[data-ma-back]').disabled=route.home===true;
-  shell.querySelector('[data-ma-home]').onclick=()=>navigate({home:true},true);
+  shell.querySelector('[data-ma-home]').onclick=()=>{if(typeof window.cep4GoHome==='function')window.cep4GoHome();else navigate({home:true},true);};
   
   shell.querySelector('[data-ma-account]').onclick=()=>navigate({page:'Integrações',account:true});
   shell.querySelector('[data-ma-back]').onclick=()=>{const form=shell.querySelector('form[data-mobile-wizard]');if(form?.mobilePrevious)form.mobilePrevious();else back();};
