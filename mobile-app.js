@@ -27,7 +27,7 @@
   form.after(controls);const prior=controls.querySelector('[data-prev]'),next=controls.querySelector('[data-next]'),count=controls.querySelector('span');
   const submitButtons=[...form.querySelectorAll('button')].filter(b=>b.type==='submit');
   function paint(){
-   labels=fields(form);groups=[];for(const label of labels){const large=!!label.querySelector('textarea,input[type=file]'),last=groups.at(-1);if(large||!last||last.length===2||last.some(l=>l.querySelector('textarea,input[type=file]')))groups.push([label]);else last.push(label);}if(!groups.length)groups=[[]];index=Math.min(index,groups.length-1);
+   labels=fields(form);groups=[];for(const label of labels){const inspection=label.closest('[data-inspection]'),existing=inspection&&groups.find(g=>g.some(l=>l.closest('[data-inspection]')===inspection));if(existing){existing.push(label);continue;}const large=!!label.querySelector('textarea,input[type=file]'),last=groups.at(-1);if(large||!last||last.length===2||last.some(l=>l.querySelector('textarea,input[type=file]')))groups.push([label]);else last.push(label);}if(!groups.length)groups=[[]];index=Math.min(index,groups.length-1);
    labels.forEach(l=>l.classList.toggle('ma-field-hidden',!groups[index].includes(l)));
    form.querySelectorAll('fieldset').forEach(f=>f.classList.toggle('ma-field-hidden',![...f.querySelectorAll('label')].some(l=>!l.classList.contains('ma-field-hidden'))));
    submitButtons.forEach(b=>b.classList.toggle('ma-field-hidden',index!==groups.length-1));
@@ -35,16 +35,16 @@
    controls.hidden=groups.length<2;
    if(review){review.hidden=index!==groups.length-1;const selectedVehicle=state.vehicles.find(v=>v.id===form.elements.vehicleId.value);review.innerHTML='<h2>Confira sua solicitação</h2><p><b>'+esc(selectedVehicle?.prefix||'Viatura')+'</b> · '+esc(form.elements.destination.value)+'</p><p>Odômetro: '+number(selectedVehicle?.odometer??Number(form.elements.initial?.value||0))+' km</p>';}
   }
-  function validGroup(){for(const label of groups[index])for(const f of label.querySelectorAll('input,select,textarea'))if(!f.checkValidity()){f.reportValidity();return false;}return true;}
+  function validGroup(){if(form.reservationAvailable&&!form.reservationAvailable("step"))return false;for(const label of groups[index])for(const f of label.querySelectorAll('input,select,textarea'))if(!f.checkValidity()){f.reportValidity();return false;}return true;}
   next.onclick=()=>{if(validGroup()){index++;paint();animate(form);}};
   prior.onclick=()=>{index=Math.max(0,index-1);paint();animate(form,true);};
   form.mobilePrevious=()=>{if(index>0)prior.click();else back();};
   form.addEventListener('submit',e=>{
    if(index<groups.length-1){e.preventDefault();e.stopImmediatePropagation();if(validGroup()){index++;paint();animate(form);}return;}
-   const invalid=[...form.elements].find(f=>f.willValidate&&!f.checkValidity());
+   if(form.reservationAvailable&&!form.reservationAvailable()){e.preventDefault();e.stopImmediatePropagation();return;}const invalid=[...form.elements].find(f=>f.willValidate&&!f.checkValidity());
    if(invalid){e.preventDefault();e.stopImmediatePropagation();const position=labels.findIndex(l=>l.contains(invalid));if(position>=0)index=groups.findIndex(group=>group.includes(labels[position]));paint();invalid.reportValidity();}
   },true);
-  form.addEventListener('change',e=>{if(['checkbox','radio'].includes(e.target.type)||e.target.name==='vehicleId')paint();});
+  form.addEventListener('change',e=>{if(['checkbox','radio'].includes(e.target.type)||['vehicleId','inspectionChoice'].includes(e.target.name))paint();});
   new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))paint();}).observe(form,{childList:true,subtree:true});
   paint();
  }
@@ -91,17 +91,17 @@
   const main=document.querySelector('.layout main');if(!main)return;
   const nav=[...document.querySelectorAll('#sidebar nav button')].filter(b=>!b.hasAttribute('data-reservation-nav')).map(b=>({key:b.dataset.page,label:b.querySelector('span')?.textContent||b.textContent.trim(),button:b}));
   const role=state.user.role;const shell=make('section','ma-shell');shell.setAttribute('aria-label','Navegação por telas');
-  shell.innerHTML='<header class="ma-brand">'+institutionalBrand()+'</header><div class="ma-top"><button type="button" class="secondary" data-ma-back>'+svg('arrow',18)+' Voltar</button><b data-ma-title></b><button type="button" class="icon-button" data-ma-refresh aria-label="Atualizar registros">'+svg('refresh',19)+'</button></div><div class="ma-stage"><div class="ma-body"></div></div><nav class="ma-bottom" aria-label="Navegação do celular"><button type="button" data-ma-home>'+svg('grid',21)+'<span>Início</span></button><button type="button" data-ma-menu>'+svg('menu',21)+'<span>Funções</span></button><button type="button" data-ma-account>'+svg('users',21)+'<span>Conta</span></button></nav>';
+  shell.innerHTML='<header class="ma-brand">'+institutionalBrand()+'</header><div class="ma-top"><button type="button" class="secondary" data-ma-back>'+svg('arrow',18)+' Voltar</button><b data-ma-title></b><button type="button" class="icon-button" data-ma-refresh aria-label="Atualizar registros">'+svg('refresh',19)+'</button></div><div class="ma-stage"><div class="ma-body"></div></div><nav class="ma-bottom" aria-label="Navegação do celular"><button type="button" data-ma-home>'+svg('grid',21)+'<span>Início</span></button><button type="button" data-ma-account>'+svg('users',21)+'<span>Conta</span></button></nav>';
   app.append(shell);document.body.classList.add('ma-enabled');
   const body=shell.querySelector('.ma-body'),title=shell.querySelector('[data-ma-title]');shell.querySelector('[data-ma-back]').disabled=route.home===true;
   shell.querySelector('[data-ma-home]').onclick=()=>navigate({home:true},true);
-  shell.querySelector('[data-ma-menu]').onclick=()=>navigate({menu:true});
+  
   shell.querySelector('[data-ma-account]').onclick=()=>navigate({page:'Integrações',account:true});
   shell.querySelector('[data-ma-back]').onclick=()=>{const form=shell.querySelector('form[data-mobile-wizard]');if(form?.mobilePrevious)form.mobilePrevious();else back();};
   shell.querySelector('[data-ma-refresh]').onclick=async e=>{const b=e.currentTarget;b.disabled=true;try{await refresh();notify('Registros atualizados.');}catch(error){notify(error.message);}finally{b.disabled=false;}};
   function tile(label,icon,handler,primary=false){const b=make('button','ma-tile'+(primary?' ma-primary':''),svg(icon,27)+'<span>'+esc(label)+'</span>');b.type='button';b.onclick=handler;return b;}
   if(route.home||route.menu){
-   title.textContent=route.menu?'Funções':'Início';body.innerHTML='<span class="ma-role">'+esc(role)+'</span><h1>'+(route.menu?'Escolha uma função':'O que deseja fazer?')+'</h1><div class="ma-tiles"></div>';
+   title.textContent=route.menu?'Funções':'Início';body.innerHTML='<span class="ma-role">'+(role==='Motorista'?'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M3 10h6m6 0h6m-9 4v7"/></svg>':'')+esc(role)+'</span><h1>'+(route.menu?'Escolha uma função':'O que deseja fazer?')+'</h1><div class="ma-tiles"></div>';
    const grid=body.querySelector('.ma-tiles'),internalRoot=appOnly()&&!route.checklist;
    if(internalRoot)grid.append(tile('Check-list','car',()=>navigate({menu:true,checklist:true}),true));
    if(!internalRoot&&(!route.menu||appOnly())&&(role==='Motorista'||uiPermit('trips.create')))grid.append(tile(role==='Motorista'?'SAÍDA':'Solicitar saída','plus',()=>navigate({page:'Movimentações',taskLabel:'Solicitar saída'}),true));
@@ -118,7 +118,7 @@
   }else if(route.fleet){title.textContent='Status das viaturas';body.innerHTML=driverFleetPanel();bindDriverFleet(body);
   }else if(route.missionId){title.textContent='Minha missão';body.innerHTML=missionPanel(route.missionId);body.querySelector('[data-mission-return]')?.addEventListener('click',e=>showAction(e.currentTarget.dataset.missionReturn,'return'));
   }else if(route.account){
-   title.textContent='Minha conta';body.innerHTML='<span class="ma-role">'+esc(role)+'</span><h1>'+esc(state.user.name)+'</h1><p>Seu perfil determina as funções disponíveis.</p>';
+   title.textContent='Minha conta';body.innerHTML='<span class="ma-role">'+(role==='Motorista'?'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M3 10h6m6 0h6m-9 4v7"/></svg>':'')+esc(role)+'</span><h1>'+esc(state.user.name)+'</h1><p>Seu perfil determina as funções disponíveis.</p>';
    const logout=make('button','secondary',svg('logout',20)+' Sair da conta');logout.type='button';logout.onclick=()=>window.cep4Logout();body.append(logout);
   }else{
    title.textContent=route.maintenance?'Dados e arquivo anual':(nav.find(n=>n.key===page)?.label||page);
