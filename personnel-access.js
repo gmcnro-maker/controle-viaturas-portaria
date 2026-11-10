@@ -36,7 +36,37 @@
   root.querySelectorAll('[data-deny-request]').forEach(b=>b.onclick=()=>modal('Indeferir solicitação','<p>O solicitante não poderá repetir a solicitação em período sobreposto.</p>',async(f,d)=>{await api('external/deny',{id:b.dataset.denyRequest});d.close();await refresh();notify('Solicitação indeferida.');}));
   root.querySelectorAll('[data-extend-request]').forEach(b=>b.onclick=()=>{const r=rows.find(r=>r.id===b.dataset.extendRequest);modal('Prorrogação excepcional',field('end','Novo fim autorizado','datetime-local',local(r.end))+field('reason','Justificativa'),async(f,d)=>{await api('external/extend',{id:r.id,end:iso(f.elements.end.value),reason:f.elements.reason.value});d.close();await refresh();notify('Prorrogação autorizada.');});});
  }
- async function requestsPanel(){const serial=++lookupSerial;try{const data=await api('external/state');if(serial!==lookupSerial||!manager())return;const d=modal('Solicitações de viaturas', '<div data-requests></div>'),box=d.querySelector('[data-requests]');box.innerHTML=data.requests.map(r=>requestCard(r,true)).join('')||'<p>Nenhuma solicitação.</p>';wireRequests(box,data.requests,data.vehicles);}catch(e){notify(e.message);}}
+ function requestActions(r){
+  const action=(name,label,style='secondary')=>'<button type="button" class="'+style+'" data-'+name+'-request="'+esc(r.id)+'">'+label+'</button>';
+  return (r.status==='Pendente'?action('approve','Aprovar','primary')+action('deny','Indeferir'):'')+
+   (['Aprovada','Efetivada','Checklist enviado'].includes(r.status)?action('extend','Prorrogar'):'')+
+   (['Pendente','Aprovada'].includes(r.status)?action('cancel','Cancelar'):'');
+ }
+ async function requestsPanel(){
+  const anchor=document.querySelector('.ma-body,.workspace .page-heading');
+  if(!manager()||!anchor)return;
+  const existing=document.getElementById('ce-external-requests-table');
+  if(existing){existing.scrollIntoView({block:'nearest'});return;}
+  const panel=document.createElement('section');
+  panel.id='ce-external-requests-table';
+  panel.className='panel ce-request-register';
+  panel.innerHTML='<h2>Solicitações externas de viaturas</h2><p role="status">Consultando solicitações…</p>';
+  anchor.after(panel);
+  const serial=++lookupSerial;
+  try{
+   const data=await api('external/state');
+   if(serial!==lookupSerial||!manager()||!panel.isConnected)return;
+   const rows=data.requests;
+   const columns=['Solicitante','Missão / motivo','Período','Situação','Viatura','Ações'];
+   panel.innerHTML='<div class="button-row"><h2>Solicitações externas de viaturas</h2><button type="button" class="secondary" data-close-register>Ocultar</button></div>'+
+    (rows.length?'<div class="ce-request-scroll" tabindex="0" aria-label="Tabela de solicitações externas"><table><thead><tr>'+columns.map(name=>'<th scope="col">'+name+'</th>').join('')+'</tr></thead><tbody>'+
+     rows.map(r=>'<tr><td><strong>'+esc(r.name)+'</strong><small>'+esc([r.rank,r.registration,r.unit,r.phone].filter(Boolean).join(' · '))+'</small></td><td>'+esc(r.mission)+'<small>'+esc(r.reason)+'</small></td><td>'+esc(reservationDate(r.start))+'<small>Até '+esc(reservationDate(r.end))+'</small></td><td>'+esc(r.status)+'</td><td>'+esc(r.vehicle?[r.vehicle.prefix,r.vehicle.plate].filter(Boolean).join(' · '):'—')+'</td><td><div class="ce-request-actions">'+(requestActions(r)||'—')+'</div></td></tr>').join('')+
+     '</tbody></table></div>':'<p>Nenhuma solicitação.</p>');
+   panel.querySelector('[data-close-register]').onclick=()=>panel.remove();
+   wireRequests(panel,rows,data.vehicles);
+   panel.scrollIntoView({block:'nearest'});
+  }catch(e){panel.querySelector('[role=status]').textContent=e.message;panel.insertAdjacentHTML('beforeend','<button type="button" class="secondary">Fechar</button>');panel.querySelector('button').onclick=()=>panel.remove();}
+ }
  const prior=render;render=function(){
   if(!state||state.needsDriverRegistration)return prior();const external=state.user.role==='Motorista'&&state.access?.internal!==true;
   if(external){
