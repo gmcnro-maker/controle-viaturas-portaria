@@ -89,9 +89,9 @@ bind=function(){accessFilterBind();document.querySelectorAll('[data-user-status]
 const taskRender=render;
 render=function(){taskRender();const sidebar=document.querySelector('#sidebar'),nav=sidebar?.querySelector('nav');if(!nav)return;
  const role=state.user.role,p4=role==='Supervisor da Frota - P4';
- const groups=[['Operação',['Painel','Movimentações','Comandante da Guarda']],['Cadastros',['Viaturas','Policiais']],['Gestão',['Acessos','Relatórios']],['Minha conta',['Integrações']]];
+ const groups=[['Operação',['Painel','Movimentações','Comandante da Guarda']],['',['Viaturas','Policiais']],['Gestão',['Acessos','Relatórios']],['Minha conta',['Integrações']]];
  const buttons=[...nav.querySelectorAll('[data-page]')];nav.innerHTML='';
- for(const [label,keys] of groups){const selected=buttons.filter(b=>keys.includes(b.dataset.page)&&(!p4||['Viaturas','Relatórios','Integrações'].includes(b.dataset.page)));if(!selected.length)continue;const group=document.createElement('div');group.className='task-nav-group';const heading=document.createElement('span');heading.className='task-nav-heading';heading.textContent=label;group.append(heading,...selected);nav.append(group);}
+ for(const [label,keys] of groups){const selected=buttons.filter(b=>keys.includes(b.dataset.page)&&(!p4||['Viaturas','Relatórios','Integrações'].includes(b.dataset.page)));if(!selected.length)continue;const group=document.createElement('div');group.className='task-nav-group';const heading=document.createElement('span');heading.className='task-nav-heading';heading.textContent=label;if(label)group.append(heading);group.append(...selected);nav.append(group);}
  sidebar.querySelector('.nav-caption')?.remove();
  const main=document.querySelector('main');main.id='main-content';main.tabIndex=-1;
  const skip=document.createElement('a');skip.className='skip-content';skip.href='#main-content';skip.textContent='Ir para o conteúdo';app.prepend(skip);
