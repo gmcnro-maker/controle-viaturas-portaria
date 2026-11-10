@@ -37,6 +37,8 @@
   root.querySelectorAll('[data-extend-request]').forEach(b=>b.onclick=()=>{const r=rows.find(r=>r.id===b.dataset.extendRequest);modal('Prorrogação excepcional',field('end','Novo fim autorizado','datetime-local',local(r.end))+field('reason','Justificativa'),async(f,d)=>{await api('external/extend',{id:r.id,end:iso(f.elements.end.value),reason:f.elements.reason.value});d.close();await refresh();notify('Prorrogação autorizada.');});});
  }
  async function requestsPanel(){const serial=++lookupSerial;try{const data=await api('external/state');if(serial!==lookupSerial||!manager())return;const d=modal('Solicitações de viaturas', '<div data-requests></div>'),box=d.querySelector('[data-requests]');box.innerHTML=data.requests.map(r=>requestCard(r,true)).join('')||'<p>Nenhuma solicitação.</p>';wireRequests(box,data.requests,data.vehicles);}catch(e){notify(e.message);}}
+ window.cep4ExternalVehicleRequests = () => manager() ? requestsPanel() : undefined;
+ window.cep4CanOpenExternalVehicleRequests = manager;
  const prior=render;render=function(){
   if(!state||state.needsDriverRegistration)return prior();const external=state.user.role==='Motorista'&&state.access?.internal!==true;
   if(external){
