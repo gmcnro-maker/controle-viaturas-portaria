@@ -37,8 +37,6 @@
   root.querySelectorAll('[data-extend-request]').forEach(b=>b.onclick=()=>{const r=rows.find(r=>r.id===b.dataset.extendRequest);modal('Prorrogação excepcional',field('end','Novo fim autorizado','datetime-local',local(r.end))+field('reason','Justificativa'),async(f,d)=>{await api('external/extend',{id:r.id,end:iso(f.elements.end.value),reason:f.elements.reason.value});d.close();await refresh();notify('Prorrogação autorizada.');});});
  }
  async function requestsPanel(){const serial=++lookupSerial;try{const data=await api('external/state');if(serial!==lookupSerial||!manager())return;const d=modal('Solicitações de viaturas', '<div data-requests></div>'),box=d.querySelector('[data-requests]');box.innerHTML=data.requests.map(r=>requestCard(r,true)).join('')||'<p>Nenhuma solicitação.</p>';wireRequests(box,data.requests,data.vehicles);}catch(e){notify(e.message);}}
- window.cep4ExternalVehicleRequests = () => manager() ? requestsPanel() : undefined;
- window.cep4CanOpenExternalVehicleRequests = manager;
  const prior=render;render=function(){
   if(!state||state.needsDriverRegistration)return prior();const external=state.user.role==='Motorista'&&state.access?.internal!==true;
   if(external){
@@ -59,7 +57,19 @@
    document.querySelectorAll('#sidebar .task-nav-group').forEach(g=>{if(!g.querySelector('button'))g.remove();});
    const unitLabel=document.querySelector('#sidebar .unit-label');if(unitLabel)unitLabel.textContent='CE · CHECK-LIST E RESERVA';
   }
-  if(manager()){const nav=document.querySelector('#sidebar nav');for(const [label,action] of [['Bases de usuários',roster],['Solicitações externas',requestsPanel]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;nav?.append(b);const tiles=document.querySelector('.ma-tiles');if(tiles){const tile=b.cloneNode(true);tile.className='ma-tile';tile.onclick=action;tiles.append(tile);}}const main=document.querySelector('.page-heading');if(main&&page==='Painel'){const b=document.createElement('button');b.textContent='Bases de usuários';b.onclick=roster;main.append(b);}}
+  if(manager()){const nav=document.querySelector('#sidebar nav');for(const [label,action] of [['Bases de usuários',roster],['Solicitações externas',requestsPanel]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;if(action!==requestsPanel)nav?.append(b);const tiles=document.querySelector('.ma-tiles');if(tiles){const tile=b.cloneNode(true);tile.className='ma-tile';tile.onclick=action;tiles.append(tile);}}const main=document.querySelector('.page-heading');
+   if(main&&!main.closest('.ma-shell')){
+    const requests=document.createElement('button');
+    requests.type='button';
+    requests.textContent='Pedidos externos de viatura';
+    requests.onclick=async()=>{
+     requests.disabled=true;
+     try{await requestsPanel();}
+     finally{requests.disabled=false;}
+    };
+    main.append(requests);
+   }
+   if(main&&page==='Painel'){const b=document.createElement('button');b.textContent='Bases de usuários';b.onclick=roster;main.append(b);}}
  };
  const clear=window.cep4Clear;window.cep4Clear=function(){lookupSerial++;clear();};
 })();
