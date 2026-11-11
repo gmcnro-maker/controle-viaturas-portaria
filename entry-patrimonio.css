@@ -68,3 +68,50 @@
 @media (prefers-reduced-motion: reduce) {
   #login-panel .ce-wallpaper { animation: none; }
 }
+
+#login-panel.login {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 3rem);
+}
+#login-panel .ce-intro,
+#login-panel .loginbox,
+#login-panel .loginbox label,
+#login-panel .loginbox details {
+  min-width: 0;
+}
+#login-panel .loginbox {
+  container-type: inline-size;
+  padding: clamp(1rem, 3vw, 2.5rem);
+}
+#login-panel .loginbox input,
+#login-panel .loginbox button {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+#login-panel .loginbox input { width: 100%; }
+#login-panel .loginbox button { white-space: normal; overflow-wrap: anywhere; }
+#login-panel .loginbox form > button[type="submit"],
+#login-panel .loginbox details > button[type="submit"] {
+  width: 100%;
+  min-height: 44px;
+}
+#login-panel .loginbox h1,
+#login-panel .ce-intro-caption h1 { overflow-wrap: anywhere; }
+@container (min-width: 28rem) {
+  #login-panel #police-login { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #login-panel #police-login > :not(label) { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+  #login-panel.login { grid-template-columns: minmax(0, 1fr); padding: 0 0 1rem; }
+  #login-panel .ce-intro {
+    min-height: 0;
+    flex-direction: row;
+    padding: clamp(1rem, 3vw, 1.75rem);
+    gap: clamp(.65rem, 2.5vw, 1.5rem);
+  }
+  #login-panel .ce-wallpaper { width: clamp(3.5rem, 12vw, 6rem); height: auto; }
+  #login-panel .ce-intro-caption { padding: 0; text-align: left; }
+  #login-panel .ce-intro-caption h1 { font-size: clamp(1.15rem, 3.5vw, 1.85rem); margin: 0; }
+  #login-panel .loginbox { width: calc(100% - 2rem); margin: 0 auto; }
+}
