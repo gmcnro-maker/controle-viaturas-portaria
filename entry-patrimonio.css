@@ -28,3 +28,43 @@
  #login-panel .loginbox h1{font-size:1.65rem}
 }
 @media(prefers-reduced-motion:reduce){#login-panel *{scroll-behavior:auto}}
+
+/* A entrada concentra a identidade visual no brasão e o acesso no formulário. */
+#login-panel.login {
+  background: #edf3fa;
+  gap: clamp(1rem, 4vw, 4rem);
+  padding-right: clamp(1rem, 4vw, 4rem);
+}
+#login-panel .ce-intro {
+  background: radial-gradient(ellipse at 50% 39%, #1b4274 0%, #0d2447 52%, #060f21 100%);
+  padding: 2rem;
+  gap: 1.25rem;
+}
+#login-panel .ce-wallpaper {
+  width: clamp(9rem, 19vw, 17rem);
+  max-height: 33svh;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 22px #020a1790);
+  animation: ce-emblem-float 6s ease-in-out 2;
+}
+@keyframes ce-emblem-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+#login-panel .ce-intro-caption h1 { text-wrap: balance; }
+#login-panel .loginbox {
+  background: #fff;
+  border: 1px solid #dbe5f0;
+  border-radius: 20px;
+  box-shadow: 0 16px 40px #17386114;
+}
+@media (max-width: 700px) {
+  #login-panel.login { padding: 0 0 1rem; }
+  #login-panel .ce-intro { padding: 1.25rem 1rem; gap: .5rem; }
+  #login-panel .ce-wallpaper { width: 5.5rem; height: 5.5rem; }
+  #login-panel .ce-intro-caption h1 { font-size: clamp(1.25rem, 5vw, 1.65rem); }
+  #login-panel .loginbox { width: calc(100% - 2rem); margin: 1rem auto 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #login-panel .ce-wallpaper { animation: none; }
+}
