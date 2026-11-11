@@ -1,80 +1,467 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="manifest.webmanifest?v=catalogo-ce-20261023"><meta name="theme-color" content="#0e2d50"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Sistema Integrado do Centro de Ensino"><link rel="apple-touch-icon" href="ce-p4-viatura-192.png"><meta name="referrer" content="no-referrer"><title>Sistema Integrado do Centro de Ensino</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="design.css"><link rel="stylesheet" href="theme-blue.css"><link rel="stylesheet" href="mobile-app.css?v=ce-motorista-20261028"><link rel="stylesheet" href="entry-patrimonio.css?v=bases-20261022"><link rel="stylesheet" href="lodging.css?v=ce-catalogo-compacto-20261027"><link rel="stylesheet" href="sections.css?v=ce-cartoes-curtos-20261027"><link rel="stylesheet" href="notifications.css?v=ce-avisos-acoes-20261029"><style>.ce-request-scroll{overflow-x:auto}.ce-request-register table{width:100%;border-collapse:collapse;font-size:.9rem}.ce-request-register th,.ce-request-register td{padding:.5rem;text-align:left;vertical-align:top;border-bottom:1px solid #dbe4ee}.ce-request-register th{background:#edf3fa;white-space:nowrap}.ce-request-register small{display:block;margin-top:.2rem}.ce-request-actions{display:flex;flex-wrap:wrap;gap:.3rem}.ce-request-actions button{padding:.35rem .55rem;font-size:.8rem}.ce-request-register .button-row{justify-content:space-between;align-items:center}</style></head><body><style>@media(min-width:701px){#google-login,#ce-external-login{display:none!important}}</style><section class="login" id="login-panel"><div class="intro ce-intro"><img class="ce-wallpaper" src="fundo-centro-ensino.png" width="1672" height="941" alt="Centro de Ensino Coronel PM Ferro" decoding="async" fetchpriority="low"><div class="ce-intro-caption"><h1>Sistema Integrado do Centro de Ensino</h1></div></div><div class="loginbox"><span class="eyebrow">ACESSO AO SISTEMA</span><h1>Acesso ao sistema</h1><p>Acesso exclusivo aos usuários internos cadastrados pelo Gestor Técnico.</p><button id="google-login" disabled><span class="google-g" aria-hidden="true">G</span> Entrar com Google</button><p id="login-message" role="status">Preparando conexão…</p><div class="login-note"><span aria-hidden="true">◈</span><span>Sua matrícula identifica o acesso.<br>O vínculo com o CE é validado pela gestão.</span></div><p class="login-privacy">Acesso exclusivo a usuários autorizados.</p></div></section><div id="app"></div><div id="notice" role="status" aria-live="polite"></div><iframe id="cep4-bridge" hidden title="Conexão protegida CEP4" referrerpolicy="no-referrer"></iframe><script src="config.js?v=ce-20261023-final"></script><script src="app.js?v=ce-20261023-final"></script><script src="design.js?v=ce-data-hora-movimentacoes"></script><script src="profiles.js?v=ce-20261023-final"></script><script src="admin-maintenance.js?v=ce-20261023-final"></script><script src="driver-registration.js?v=ce-20261023-final"></script><script src="theme-blue.js?v=ce-20261023-final"></script><script src="fleet-delete.js?v=ce-20261023-final"></script><script src="first-odometer.js?v=ce-20261023-final"></script><script src="driver-inspection.js?v=ce-motorista-20261028"></script>
-
-
-
-
-
-
-
-<script src="live-refresh.js?v=ce-nav-20261027"></script>
-
-
-
-
-
-
-
-<script src="mission-view.js?v=ce-20261023-final"></script>
-
-
-
-
-
-
-
-<script src="photo-viewer.js?v=ce-20261023-final"></script>
-
-
-
-
-
-
-
-<script src="driver-fleet.js?v=ce-20261023-final"></script><script src="shift-report.js?v=ce-20261023-final"></script><script src="guard-entry.js?v=ce-20261023-final"></script><script src="guard-pending.js?v=ce-20261023-final"></script><script src="reservations.js?v=ce-motorista-20261028"></script><script src="password-admin.js?v=ce-20261023-final"></script><script src="mobile-app.js?v=ce-inicio-modulos-20261029"></script><script src="install-app.js?v=ce-20261023-final"></script><script src="fleet-lights.js?v=ce-20261023-final"></script><script src="personnel-access.js?v=ce-registro-viaturas"></script><script src="lodging.js?v=ce-avisos-acoes-20261029"></script><script src="sections.js?v=ce-sjd-balanca-20261027"></script><script src="external-onboarding.js?v=ce-nav-20261027"></script><script src="section-policy.js?v=ce-20261023-final"></script><script src="internal-access.js?v=ce-motorista-20261028"></script><script src="notifications.js?v=ce-tecnico-sem-avisos-20261029"></script><script src="navigation.js?v=ce-pedidos-na-viatura"></script><script src="driver-usability.js?v=ce-motorista-20261028"></script><script type="module" src="auth.js?v=ce-nav-20261027"></script></body></html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1120">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CEP4 · PMRO">
+  <meta name="referrer" content="no-referrer">
+  <title>CEP4 · Controle de Viaturas e Portaria | PMRO</title>
+  <link rel="manifest" href="manifest.webmanifest?v=catalogo-ce-20261023">
+  <link rel="apple-touch-icon" href="ce-p4-viatura-192.png">
+  <!-- Folhas originais: regras e módulos existentes permanecem intactos. -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="design.css">
+  <link rel="stylesheet" href="theme-blue.css">
+  <link rel="stylesheet" href="mobile-app.css?v=ce-motorista-20261028">
+  <link rel="stylesheet" href="entry-patrimonio.css?v=bases-20261022">
+  <link rel="stylesheet" href="lodging.css?v=ce-catalogo-compacto-20261027">
+  <link rel="stylesheet" href="sections.css?v=ce-cartoes-curtos-20261027">
+  <link rel="stylesheet" href="notifications.css?v=ce-avisos-acoes-20261029">
+  <style>
+    .ce-request-scroll{overflow-x:auto}
+    .ce-request-register table{width:100%;border-collapse:collapse;font-size:.9rem}
+    .ce-request-register th,.ce-request-register td{padding:.5rem;text-align:left;vertical-align:top;border-bottom:1px solid #dbe4ee}
+    .ce-request-register th{background:#edf3fa;white-space:nowrap}
+    .ce-request-register small{display:block;margin-top:.2rem}
+    .ce-request-actions{display:flex;flex-wrap:wrap;gap:.3rem}
+    .ce-request-actions button{padding:.35rem .55rem;font-size:.8rem}
+    .ce-request-register .button-row{justify-content:space-between;align-items:center}
+    @media(min-width:701px){#google-login,#ce-external-login{display:none!important}}
+  </style>
+  <!-- Visual Enterprise carregado por último: sobrepõe o tema sem alterar a API. -->
+  <style id="cep4-enterprise-inline">
+/* CEP4 Enterprise · Dark Mode SaaS. Carregar por ÚLTIMO após CSS existentes.
+   Somente apresentação: não amplia autorizações, não altera dados. */
+:root{
+ color-scheme:dark;
+ --ep-bg:#0b1120;--ep-surface:#111827;--ep-surface-2:#172235;
+ --ep-surface-hover:#1d2a40;--ep-rail:#0a1020;--ep-text:#f1f5fd;
+ --ep-muted:#98a8c2;--ep-subtle:#71839e;--ep-line:rgba(175,200,235,.13);
+ --ep-accent:#63a6ff;--ep-accent-strong:#387eef;--ep-focus:#7db5ff;
+ --navy:var(--ep-rail);--blue:var(--ep-accent-strong);--ink:var(--ep-text);
+ --line:var(--ep-line);--muted:var(--ep-muted)
+}
+html{background:var(--ep-bg);scroll-behavior:smooth}
+body,body[data-theme=blue],body.ma-enabled{background:var(--ep-bg)!important;color:var(--ep-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.55}
+body::selection{background:#3d76c9;color:#fff}
+h1,h2,h3,h4,b,strong,legend{color:var(--ep-text)}
+p,small,.muted,.eyebrow,.panel-head p,.page-heading p,.main-footer,.stat small{color:var(--ep-muted)}
+a{color:#8bbdff}a:hover{color:#c1dcff}
+button,button.secondary,.button,.ce-icon-action{transition:background .18s,border-color .18s,transform .18s,box-shadow .18s}
+button:not(.text-button):not(.icon-button):not(.password-toggle):not(.ma-tile):not([data-page]):not([data-go]):not([data-more]){background:#397fec;color:#fff;border:1px solid #5798fa50;border-radius:10px}
+button:not(:disabled):hover{filter:none}
+button:not(.text-button):not(.icon-button):not(.password-toggle):not(.ma-tile):not([data-page]):not([data-go]):not([data-more]):hover{background:#4b90f7;box-shadow:0 4px 22px #1f6edc30}
+button.secondary,button.secondary:not([data-page]):not([data-go]),.secondary{background:#1b2a3f!important;color:#dce9fb!important;border:1px solid var(--ep-line)!important}
+button.secondary:hover{background:#243750!important}
+button.text-button,.text-button{background:none!important;color:#91c4ff!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,summary:focus-visible{outline:3px solid var(--ep-focus)!important;outline-offset:3px}
+input,select,textarea,.search,.ma-content input,.ma-content select,.ma-content textarea{
+ background:#0d1728!important;color:#f2f7ff!important;border:1px solid #30415a!important;border-radius:10px!important;box-shadow:none!important
+}
+input::placeholder,textarea::placeholder{color:#8597b0;opacity:1}
+select option{background:#111c2f;color:#f2f7ff}
+input:read-only{background:#101c2c!important;color:#aabbd0!important}
+input:focus,select:focus,textarea:focus{border-color:#65a7ff!important;box-shadow:0 0 0 3px #3a88f626!important}
+input[type=checkbox],input[type=radio]{accent-color:#66a5ff}
+fieldset{border-color:var(--ep-line)!important}
+hr{border:0;border-top:1px solid var(--ep-line)}
+/* Layout, navegação e barra superior */
+.layout,.ep-layout{background:var(--ep-bg);grid-template-columns:258px minmax(0,1fr)}
+.layout aside,#sidebar{background:linear-gradient(175deg,#0d182b 0%,#080f1c 90%)!important;border-right:1px solid var(--ep-line);box-shadow:inset -1px 0 #ffffff05}
+.layout aside .brand{color:#f7faff;letter-spacing:-.03em}
+.brand .institution-marks img{filter:drop-shadow(0 2px 6px #0005)}
+.unit-label,.nav-caption,.task-nav-heading{color:#8da1bd}
+#sidebar nav button,#sidebar .task-nav-group button{color:#b3c5dc!important;background:transparent!important;border:1px solid transparent;border-radius:10px;min-height:44px}
+#sidebar nav button:hover,#sidebar .task-nav-group button:hover{background:#1c314d!important;color:#fff!important}
+#sidebar nav button.active,#sidebar nav button[aria-current=page]{background:linear-gradient(100deg,#1b3e69,#244d7b)!important;color:#fff!important;border-color:#76b2ff36!important;box-shadow:inset 3px 0 #69b2ff,0 10px 28px #040b1933!important}
+#sidebar .rail-shield,#sidebar .rail-version{border-color:var(--ep-line);color:#90a7c2}
+#sidebar .rail-shield b{color:#d1def1}
+#sidebar .rail-shield small{color:#92a6c0}
+.workspace,.workspace main{background:transparent}
+.topbar{background:#0d1829e9!important;border-bottom:1px solid var(--ep-line)!important;backdrop-filter:blur(20px);min-height:76px}
+.breadcrumbs,.breadcrumbs b,.date-top,.account small{color:#a1b1c8}.breadcrumbs svg{color:#5e779b}
+.account{border-left-color:var(--ep-line)}.account b{color:#f1f5fd}
+.avatar{background:#1a3455;color:#a9d3ff;border:1px solid #315a85}
+.icon-button{color:#9fb3cf!important;border-radius:10px}.icon-button:hover{background:#1d2d46!important;color:#fff!important}
+main{max-width:1800px;padding:30px clamp(16px,3.1vw,46px) 28px}
+.page-heading h1{font-size:clamp(1.8rem,2.5vw,2.65rem);font-weight:750;letter-spacing:-.045em}
+.page-heading p{max-width:650px}.eyebrow{color:#7daceb;letter-spacing:.16em}
+.workspace-context{border:1px solid #2d4260!important;background:linear-gradient(105deg,#12243b,#15263c)!important;border-radius:12px!important}
+.workspace-context>span,.workspace-context p{color:#b8d3f4!important}
+/* Painéis e cartões */
+.panel,.card,.stat,.ce-section-card,.ce-service-list>*,.ce-sections .ce-section-detail,.ce-sections .ce-shortcuts button{
+ background:var(--ep-surface)!important;color:var(--ep-text)!important;border:1px solid var(--ep-line)!important;border-radius:15px!important;box-shadow:0 14px 44px #02071224!important
+}
+.panel-head,.panel header{border-color:var(--ep-line)}.panel-head h2,.panel h2{color:#f3f7ff}
+.hero{background:linear-gradient(120deg,#142743 0%,#203d65 70%,#13233a 100%)!important;border:1px solid #3c638854!important}
+.hero h2{color:#f5f9ff}.hero p{color:#bed0e7}
+.hero-button{background:#edf6ff!important;color:#194572!important}
+.stats,.ep-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:20px 0 10px}
+.ep-kpi{position:relative;background:linear-gradient(160deg,#151f31,#101a29);border:1px solid var(--ep-line);border-radius:16px;padding:20px 21px 18px;min-width:0;overflow:hidden}
+.ep-kpi:after{content:"";position:absolute;top:-35px;right:-35px;width:140px;height:140px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#4f9dfb14,transparent 68%)}
+.ep-kpi-row{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#afc1db;font-size:.87rem;font-weight:600}
+.ep-kpi-icon{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:#243c5e;color:#7cb8ff;flex:none}
+.ep-icon{width:20px;height:20px;flex:none}
+.ep-kpi strong{display:block;font-size:clamp(2rem,2.7vw,2.8rem);line-height:1.15;letter-spacing:-.05em;margin:9px 0 11px;font-weight:750;color:#f5f8ff}
+.ep-kpi small{display:block;color:#91a4bd;font-size:.76rem;line-height:1.45}
+.ep-kpi.amber .ep-kpi-icon{background:#45331e;color:#ffd077}
+.ep-kpi.violet .ep-kpi-icon{background:#322a52;color:#b9a3ff}
+.ep-kpi.green .ep-kpi-icon{background:#163d35;color:#71e2b9}
+.ep-metric-note,.ep-mobile-note{font-size:.72rem;color:#7f91aa;margin:0 0 22px;line-height:1.4}
+.dashboard-grid{grid-template-columns:minmax(0,1fr) minmax(250px,290px);gap:20px}
+.side-stack>*{min-width:0}.attention,.recent{background:var(--ep-surface)!important}
+.process-card{background:linear-gradient(140deg,#1a3552,#111f36)!important;color:#e6f3ff;border:1px solid #5d8bc639!important;border-radius:14px!important}
+.process-card h2,.process-card b{color:#f3f8ff}.process-card small{color:#b7cbe4}
+.task-shortcuts button,.ce-shortcuts button{background:#182740!important;border:1px solid #355274!important;color:#cae3ff!important;box-shadow:none!important}
+.task-shortcuts button:hover,.ce-shortcuts button:hover{background:#23426b!important}
+/* Tabelas e estados */
+.tablewrap{overflow-x:auto;scrollbar-color:#425b78 #111827}
+table{border-collapse:collapse;color:#e6edf8}table th,th{background:#18253a!important;color:#9eb5d4!important;font-size:.72rem;letter-spacing:.07em;font-weight:700}
+table td,table th{border-bottom:1px solid var(--ep-line)!important}table td{color:#dbe5f3;white-space:normal}table td b,table td strong{color:#f3f8ff}
+table td small,.vehicle-cell small{color:#8fa5c3!important}
+table tbody tr:hover{background:#1a294029!important}
+.vehicle-icon{background:#203a5d!important;color:#a6ccff!important}
+.odometer span{color:#8da3c1!important}
+.badge,.badge.mission,.badge.warn,.badge.good{display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;letter-spacing:0;font-size:.75rem;font-weight:650;border-radius:100px;padding:5px 10px}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+.badge,.badge.mission,.badge.ep-status-transit{background:#47351c!important;border-color:#815c27!important;color:#ffcf77!important}
+.badge.good,.badge.ep-status-done{background:#113d32!important;border-color:#287b60!important;color:#79e0b5!important}
+.badge.warn,.badge.ep-status-pending{background:#372e1a!important;border-color:#6b5428!important;color:#e8bf70!important}
+.badge.ep-status-alert{background:#421e28!important;border-color:#823b4f!important;color:#ff94ab!important}
+.badge:not(.mission):not(.good):not(.warn):not(.ep-status-transit):not(.ep-status-done):not(.ep-status-pending):not(.ep-status-alert){background:#1d3554!important;border-color:#355f8d!important;color:#a5d1ff!important}
+.tabs{background:#172337!important;border:1px solid var(--ep-line)!important}
+.tabs button{background:transparent!important;color:#9ab0c9!important}
+.tabs button.selected{background:#29486e!important;color:#fff!important;box-shadow:0 3px 12px #0003!important}
+.table-tools{flex-wrap:wrap}
+.search{background:#0d1728!important;border:1px solid #30415a!important}
+.pending-item{background:transparent!important;color:#dce9f8!important;border-bottom:1px solid var(--ep-line)!important}
+.pending-item:hover{background:#1c2d45!important}
+.pending-icon{background:#283e5a!important;color:#abceff!important}
+.all-clear{color:#8cdbb9!important}.all-clear b{color:#d3f7e8}
+.panel-foot{border-color:var(--ep-line)!important;color:#90a5c0!important}
+.empty{color:#92a4bd}.empty h3{color:#e0eafa}
+.alert{background:#352c1e!important;color:#ffd690!important;border:1px solid #6e5026!important;border-radius:12px}
+.danger-action{background:#44202b!important;color:#ff9cae!important;border-color:#a04760!important}
+/* Formulário de registro rápido: pré-preenchimento do fluxo original */
+.ep-quick{padding:24px 26px!important;margin:0 0 22px!important;background:linear-gradient(120deg,#152238,#111a2a)!important}
+.ep-quick-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:18px}
+.ep-quick-head h2{font-size:1.3rem;font-weight:750;margin:4px 0}
+.ep-quick-head p{font-size:.83rem;max-width:680px}
+.ep-overline{font-size:.65rem;font-weight:800;color:#74b3ff;letter-spacing:.16em}
+.ep-quick-sign{display:flex;align-items:center;gap:6px;border:1px solid #1e80644a;background:#15392e;color:#85e6c2;border-radius:100px;padding:6px 10px;white-space:nowrap;font-size:.72rem}
+.ep-quick-sign .ep-icon{width:15px;height:15px}
+.ep-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:10px 16px}
+.ep-quick-grid label{display:grid;gap:7px;font-size:.77rem;color:#b7c7db;margin:0;min-width:0;font-weight:600}
+.ep-quick-grid input,.ep-quick-grid select{margin:0;min-width:0;font-size:.9rem;padding:10px 12px;min-height:43px}
+.ep-quick-submit{display:flex;align-items:end}.ep-quick-submit button{width:100%;min-height:43px;justify-content:center}
+.ep-returning .ep-exit-only{display:none!important}
+/* Autenticação e diálogos */
+.login{background:var(--ep-bg)}.intro{background:linear-gradient(160deg,#0b192d,#153353)!important}
+.loginbox{color:#e7eefb}.loginbox h1{color:#f4f8ff}
+.loginbox p,.loginbox #login-message,.login-privacy,.login-note{color:#9fb2cc!important}
+.loginbox input{color:#fff!important}
+.dialog-heading,.dialog-heading button{color:#d1e3fb!important}
+dialog,.ce-access-dialog{color:var(--ep-text)!important;background:#131f31!important;border:1px solid #405475!important;border-radius:17px!important;box-shadow:0 24px 80px #0008!important}
+dialog::backdrop{background:#030916c7;backdrop-filter:blur(4px)}
+dialog p{color:#a5b6cd}.dialog-error,[role=alert]:not(:empty){background:#43202b!important;border:1px solid #7b3e52!important;color:#ffadbd!important}
+#notice:not(:empty){background:#1a3452!important;color:#fff!important;border:1px solid #4678ad;border-left:4px solid #79b9ff;border-radius:12px!important;box-shadow:0 12px 32px #0007}
+/* Seções institucionais e outros módulos originais */
+.ce-sections,.ce-sections main,.ce-sections header,.ce-section-detail,.ce-section-grid,.ce-service-list{color:var(--ep-text);background:transparent!important}
+.ce-sections>header{background:#0d192a!important;border-bottom:1px solid var(--ep-line)!important}
+.ce-sections h1,.ce-sections h2,.ce-sections h3{color:var(--ep-text)}
+.ce-sections p,.ce-section-card small,.ce-section-detail p{color:var(--ep-muted)!important}
+.ce-section-card:hover{background:#1b2d47!important;border-color:#456a9b!important}
+.ce-sections nav button{color:#cfddf1}
+.ce-pending,.ce-task-summary{color:#b4c9e3!important;background:#16283d!important;border-color:var(--ep-line)!important}
+.ce-shortcuts a,.ce-section-detail a{color:#8cbcff}
+/* Aplicativo móvel: shell oficial mantém fluxo de formulários, fotos e permissões */
+body.ma-enabled .ma-shell{background:var(--ep-bg)!important;color:var(--ep-text)!important}
+.ma-brand{background:linear-gradient(110deg,#0d203a,#16355b)!important;border-bottom:1px solid #587fa84a!important}
+.ma-top,.ma-bottom{background:#131e30!important;color:#e8f2ff!important;border-color:var(--ep-line)!important;box-shadow:none!important}
+.ma-top>b{color:#f3f8ff}.ma-top button,.ma-bottom button{background:#1b2d45!important;color:#a9c8ed!important}
+.ma-body{background:var(--ep-bg);color:var(--ep-text)}.ma-role{color:#8dc3ff!important}
+.ma-body h1{color:#f1f6ff}.ma-body p{color:#99aecb}
+.ma-tile{background:#131f32!important;color:#cfe2ff!important;border:1px solid #304765!important;box-shadow:0 8px 22px #0003!important}
+.ma-tile.ma-primary{background:linear-gradient(120deg,#285ea6,#367edf)!important;border-color:#5b9bfb!important;color:white!important}
+.ma-tile:hover{background:#1e3553!important}
+.ma-content .panel{background:transparent!important;border:0!important;box-shadow:none!important}
+.ma-content table tr,.panel table tr{border-color:var(--ep-line)!important}
+.ma-review,.ma-form-controls,.ma-pager{color:#d5e5fa}
+.ma-form-controls span,.ma-pager span{color:#a5b6cd}
+.ma-content table td::before{color:#8da5c3!important}
+.ma-bottom button[aria-current=page]{background:#264a73!important;color:#eaf4ff!important}
+.ep-mobile-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:2px 0 0}
+.ep-mobile-kpis .ep-kpi{padding:13px 12px;border-radius:13px}
+.ep-mobile-kpis .ep-kpi-row{font-size:.69rem;gap:5px}
+.ep-mobile-kpis .ep-kpi-icon{width:30px;height:30px;border-radius:9px}
+.ep-mobile-kpis .ep-icon{width:16px;height:16px}
+.ep-mobile-kpis .ep-kpi strong{font-size:1.7rem;margin:5px 0}
+.ep-mobile-kpis .ep-kpi small{font-size:.61rem;line-height:1.3}
+.ep-mobile-note{font-size:.66rem;margin:0}
+/* Responsividade */
+@media(max-width:1240px){.layout,.ep-layout{grid-template-columns:228px minmax(0,1fr)}.ep-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.layout,.ep-layout{grid-template-columns:minmax(0,1fr)}.stats,.ep-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:22px 18px 88px}}
+@media(max-width:600px){
+ .topbar{padding:0 14px!important}.topbar-right{gap:7px}.account span:not(.avatar),.date-top{display:none}
+ .page-heading h1{font-size:1.7rem}.page-heading p{font-size:.84rem}
+ .ep-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .ep-kpi{padding:15px 13px}.ep-kpi strong{font-size:1.9rem}
+ .ep-kpi-row{font-size:.77rem}.ep-kpi-icon{width:31px;height:31px}
+ .ep-quick{padding:18px 15px!important}.ep-quick-head{flex-direction:column;gap:10px}
+ .ep-quick-grid{grid-template-columns:1fr}.ep-quick-submit button{min-height:48px}
+ .panel{padding:17px}.panel-head{padding:16px}
+ .panel table tr{background:#142137!important;border:1px solid #30435e!important}
+ .tabs{max-width:100%;overflow-x:auto}.table-tools{padding:12px 14px}
+ dialog{width:calc(100% - 16px)!important;max-height:90dvh!important}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+/* Compatibilidade visual dos módulos de Patrimônio, Alojamentos e Avisos */
+#login-panel .loginbox{background:linear-gradient(140deg,#131f31,#0e182a)!important;border:1px solid #30415a!important;box-shadow:0 24px 70px #02061040!important}
+#login-panel.login{background:var(--ep-bg)!important}
+.pm-app,.pm-consumer-home,.pm-main,.pm-portal{background:var(--ep-bg)!important;color:var(--ep-text)!important}
+.pm-header{background:linear-gradient(110deg,#0d2039,#153251)!important;border-bottom:1px solid var(--ep-line)!important}
+.pm-portal,.pm-card,.pm-main .panel{background:var(--ep-surface)!important;border:1px solid var(--ep-line)!important;color:var(--ep-text)!important;box-shadow:0 14px 34px #0003!important}
+.pm-main h1,.pm-card h2,.pm-portal h1,.pm-consumer-services h2,#patrimony-picker h1{color:var(--ep-text)!important}
+.pm-notice,.pm-welcome-tag,.ce-internal-login,.pm-status{background:#1b3049!important;color:#bcd8f8!important;border:1px solid #355576!important}
+.pm-entry-lead,.pm-entry-note,.pm-consumer-services>p{color:#9cacc5!important}
+.pm-bed>b{background:#17283d!important;color:#f0f5ff!important}
+.pm-download{background:#17273e;border-color:#3a5371;color:#b9d8ff}
+.pm-consumer-services{background:transparent!important}
+.ce-notice-header{background:#131f31!important;color:var(--ep-text)!important}
+.ce-notice-list article{border-bottom-color:var(--ep-line)!important}
+.ce-notice-list article p,.ce-notice-list article small{color:#a6b7cf!important}
+.ce-notice-preferences summary,.ce-internal-login>summary{color:#b9d8ff!important}
+.ce-bell{background:#1d3756!important;color:#c9e3ff!important;border:1px solid #527eaa!important;box-shadow:0 7px 22px #0005!important}
+.ce-service-list span{background:#1c2f49!important;color:#d1e3fa!important;border:1px solid #3a537148!important}
+.ce-sections>header>div:first-child{background:#0e1a2b!important;border-bottom:1px solid var(--ep-line)!important}
+.ce-sections>header>.button-row{background:#0d182a!important;border-right:1px solid var(--ep-line)!important}
+.ce-sections>header>.button-row>button{background:#1b314e!important;color:#d4e6fd!important;border:1px solid #314d6c!important}
+.ce-sections>header>.button-row>button:hover,.ce-sections>header>.button-row>[aria-current=page]{background:#28507e!important;color:#fff!important}
+.ce-request-register th{background:#18253a!important;color:#b9cce6!important}
+.ce-request-register td{border-color:var(--ep-line)!important}
+
+/* Impressão de relatórios: fundo branco e contraste preto */
+@media print{
+ :root{color-scheme:light}body,body[data-theme=blue]{background:#fff!important;color:#111!important}
+ .ep-quick,.ep-kpis,.ep-metric-note,.ep-mobile-kpis,.ep-mobile-note,.ma-bottom{display:none!important}
+ main,.panel,.tablewrap,table,thead,tbody,tr,th,td,.workspace{background:#fff!important;color:#111!important;box-shadow:none!important}
+ th,td{color:#111!important;border-color:#ccc!important}h1,h2,h3,strong,b,small,p{color:#111!important}
+ .panel table{display:table!important}.panel table thead{display:table-header-group!important}.panel table tbody{display:table-row-group!important}.panel table tr{display:table-row!important}.panel table td{display:table-cell!important}.panel table td:before{display:none!important}
+}
+
+  </style>
+</head>
+<body>
+  <section class="login" id="login-panel">
+    <div class="intro ce-intro">
+      <img class="ce-wallpaper" src="fundo-centro-ensino.png" width="1672" height="941" alt="Centro de Ensino Coronel PM Ferro" decoding="async" fetchpriority="low">
+      <div class="ce-intro-caption"><h1>Sistema Integrado do Centro de Ensino</h1></div>
+    </div>
+    <div class="loginbox">
+      <span class="eyebrow">ACESSO AO SISTEMA</span>
+      <h1>Acesso ao sistema</h1>
+      <p>Acesso exclusivo aos usuários internos cadastrados pelo Gestor Técnico.</p>
+      <button id="google-login" disabled><span class="google-g" aria-hidden="true">G</span> Entrar com Google</button>
+      <p id="login-message" role="status">Preparando conexão…</p>
+      <div class="login-note"><span aria-hidden="true">◈</span><span>Sua matrícula identifica o acesso.<br>O vínculo com o CE é validado pela gestão.</span></div>
+      <p class="login-privacy">Acesso exclusivo a usuários autorizados.</p>
+    </div>
+  </section>
+  <div id="app"></div>
+  <div id="notice" role="status" aria-live="polite"></div>
+  <iframe id="cep4-bridge" hidden title="Conexão protegida CEP4" referrerpolicy="no-referrer"></iframe>
+  <!-- Scripts da aplicação existente. ORDEM NECESSÁRIA: não reorganizar. -->
+  <script src="config.js?v=ce-20261023-final"></script>
+  <script src="app.js?v=ce-20261023-final"></script>
+  <script src="design.js?v=ce-data-hora-movimentacoes"></script>
+  <script src="profiles.js?v=ce-20261023-final"></script>
+  <script src="admin-maintenance.js?v=ce-20261023-final"></script>
+  <script src="driver-registration.js?v=ce-20261023-final"></script>
+  <script src="theme-blue.js?v=ce-20261023-final"></script>
+  <script src="fleet-delete.js?v=ce-20261023-final"></script>
+  <script src="first-odometer.js?v=ce-20261023-final"></script>
+  <script src="driver-inspection.js?v=ce-motorista-20261028"></script>
+  <script src="live-refresh.js?v=ce-nav-20261027"></script>
+  <script src="mission-view.js?v=ce-20261023-final"></script>
+  <script src="photo-viewer.js?v=ce-20261023-final"></script>
+  <script src="driver-fleet.js?v=ce-20261023-final"></script>
+  <script src="shift-report.js?v=ce-20261023-final"></script>
+  <script src="guard-entry.js?v=ce-20261023-final"></script>
+  <script src="guard-pending.js?v=ce-20261023-final"></script>
+  <script src="reservations.js?v=ce-motorista-20261028"></script>
+  <script src="password-admin.js?v=ce-20261023-final"></script>
+  <script src="mobile-app.js?v=ce-inicio-modulos-20261029"></script>
+  <script src="install-app.js?v=ce-20261023-final"></script>
+  <script src="fleet-lights.js?v=ce-20261023-final"></script>
+  <script src="personnel-access.js?v=ce-registro-viaturas"></script>
+  <script src="lodging.js?v=ce-avisos-acoes-20261029"></script>
+  <script src="sections.js?v=ce-sjd-balanca-20261027"></script>
+  <script src="external-onboarding.js?v=ce-nav-20261027"></script>
+  <script src="section-policy.js?v=ce-20261023-final"></script>
+  <script src="internal-access.js?v=ce-motorista-20261028"></script>
+  <script src="notifications.js?v=ce-tecnico-sem-avisos-20261029"></script>
+  <script src="navigation.js?v=ce-pedidos-na-viatura"></script>
+  <script src="driver-usability.js?v=ce-motorista-20261028"></script>
+  <!-- Wrapper visual; backend e permissões permanecem no código original. -->
+  <script>
+/**
+ * CEP4 Enterprise UI - camada de apresentação não invasiva.
+ * Mantém autenticação, regras de autorização, envio de fotos e backend existentes.
+ * Deve ser carregado após todos os scripts clássicos, antes do módulo auth.js.
+ */
+(() => {
+  'use strict';
+  const previousRender = render;
+  const zone = 'America/Porto_Velho';
+  const dayFormat = new Intl.DateTimeFormat('pt-BR', {timeZone:zone,day:'2-digit',month:'2-digit',year:'numeric'});
+  const iconPaths = {
+    garage:'M4 21V9l8-6 8 6v12M4 10h16M8 21v-7h8v7M8 17h8',
+    route:'M4 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM20 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM4 18V9a5 5 0 0 1 5-5h9M10 20h4a6 6 0 0 0 6-6V6',
+    wrench:'M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 12l-2-2 2.7-3.7Z',
+    registry:'M8 4h11v16H5V7l3-3Zm0 0v3H5m4 4h7m-7 4h7',
+    exit:'M5 12h14m-6-6 6 6-6 6',
+    return:'M19 12H5m6-6-6 6 6 6',
+    check:'m5 12 4 4L19 6'
+  };
+  const icon = (name) => '<svg class="ep-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+iconPaths[name]+'"/></svg>';
+  const safe = (v) => String(v == null ? '' : v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const numberValue = v => Number.isFinite(Number(v)) ? Number(v).toLocaleString('pt-BR') : '—';
+  function day(value){if(!value)return '';const date=new Date(value);return Number.isFinite(date.getTime())?dayFormat.format(date):'';}
+  function metrics(){
+    const fleet=Array.isArray(state?.vehicles)?state.vehicles:[];
+    const trips=Array.isArray(state?.trips)?state.trips:[];
+    const occupied=new Set(trips.filter(t=>t.status!=='Concluída').map(t=>t.vehicleId));
+    const garage=fleet.filter(v=>(v.status||'Ativa')==='Ativa'&&!v.busy&&!occupied.has(v.id)).length;
+    const transit=trips.filter(t=>['Em serviço','Aguardando entrada'].includes(t.status)).length;
+    const maintenance=fleet.filter(v=>v.status==='Manutenção').length;
+    const current=dayFormat.format(new Date());
+    const today=trips.filter(t=>[t.createdAt,t.exitAt,t.returnAt,t.entryAt].some(x=>day(x)===current)).length;
+    return [
+      {name:'Viaturas na garagem',value:garage,icon:'garage',tone:'blue',hint:'Ativas sem movimentação aberta*'},
+      {name:'Em trânsito',value:transit,icon:'route',tone:'amber',hint:'Saídas autorizadas, entradas pendentes'},
+      {name:'Manutenção',value:maintenance,icon:'wrench',tone:'violet',hint:'Viaturas indisponíveis'},
+      {name:'Registros do dia',value:today,icon:'registry',tone:'green',hint:'Movimentações com evento hoje'}
+    ];
+  }
+  function metricMarkup(items,compact=false){
+    return items.map(x=>'<article class="ep-kpi '+safe(x.tone)+'" aria-label="'+safe(x.name)+': '+x.value+'"><div class="ep-kpi-row"><span>'+safe(x.name)+'</span><span class="ep-kpi-icon">'+icon(x.icon)+'</span></div><strong>'+String(x.value).padStart(2,'0')+'</strong><small>'+safe(x.hint)+'</small></article>').join('');
+  }
+  function decorateBadges(root){
+    root.querySelectorAll('.badge').forEach(element=>{
+      const label=element.textContent.trim();
+      if(label==='Em missão'||label==='Em serviço') {element.classList.add('ep-status-transit');element.textContent='Em trânsito';}
+      if(label==='Finalizado'||label==='Concluída') {element.classList.add('ep-status-done');element.textContent='Concluído';}
+      if(label==='Aguardando saída'||label==='Aguardando entrada')element.classList.add('ep-status-pending');
+      if(label==='Divergência')element.classList.add('ep-status-alert');
+    });
+  }
+  function decorateDesktop(){
+    const layout=document.querySelector('#app > .layout');
+    if(!layout)return;
+    const main=layout.querySelector('main');
+    if(!main)return;
+    document.body.classList.add('ep-enterprise');
+    layout.classList.add('ep-layout');
+    const stats=main.querySelector('.stats');
+    if(page==='Painel'&&stats){
+      stats.classList.add('ep-kpis');
+      stats.innerHTML=metricMarkup(metrics());
+      if(!main.querySelector('.ep-metric-note')){
+        const note=document.createElement('p');note.className='ep-metric-note';
+        note.textContent='* Garagem = viaturas ativas sem movimentação aberta. Indicadores limitados aos dados autorizados para seu perfil.';
+        stats.after(note);
+      }
+      mountQuickForm(main);
+    }
+    decorateBadges(layout);
+    main.querySelectorAll('table').forEach(table=>{
+      const headers=[...table.querySelectorAll('thead th')].map(th=>th.textContent.trim());
+      table.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>{if(!td.dataset.label)td.dataset.label=headers[i]||'Detalhe';}));
+    });
+  }
+  function quickVehicles(mode){
+    const fleet=Array.isArray(state.vehicles)?state.vehicles:[];
+    const trips=Array.isArray(state.trips)?state.trips:[];
+    if(mode==='return'){
+      const user=state.user||{};
+      const ids=new Set(trips.filter(t=>t.status==='Em serviço'&&(user.role!=='Motorista'||t.officerId===user.officerId)).map(t=>t.vehicleId));
+      return fleet.filter(v=>ids.has(v.id));
+    }
+    const busy=new Set(trips.filter(t=>t.status!=='Concluída').map(t=>t.vehicleId));
+    return fleet.filter(v=>(v.status||'Ativa')==='Ativa'&&!v.busy&&!busy.has(v.id));
+  }
+  function mountQuickForm(main){
+    if(main.querySelector('#ep-quick'))return;
+    const anchor=main.querySelector('.dashboard-grid');if(!anchor)return;
+    const panel=document.createElement('section');panel.id='ep-quick';panel.className='panel ep-quick';
+    panel.innerHTML='<div class="ep-quick-head"><div><span class="ep-overline">OPERAÇÃO ASSISTIDA</span><h2>Registro rápido</h2><p>Informe os dados iniciais e conclua na rotina oficial, com fotos e conferências obrigatórias.</p></div><span class="ep-quick-sign">'+icon('check')+' Fluxo validado</span></div>'+
+    '<form id="ep-quick-form" class="ep-quick-grid">'+
+    '<label>Operação<select name="mode"><option value="exit">Saída</option><option value="return">Retorno</option></select></label>'+
+    '<label>Viatura<select name="vehicle" required></select></label>'+
+    '<label class="ep-exit-only">Condutor<select name="officer"></select></label>'+
+    '<label>Odômetro<input name="odometer" type="text" readonly aria-label="Odômetro de referência" placeholder="Leitura no registro oficial"></label>'+
+    '<label class="ep-exit-only ep-destination">Destino / missão<input name="destination" maxlength="180" placeholder="Ex.: Serviço externo no setor norte"></label>'+
+    '<div class="ep-quick-submit"><button type="submit">Continuar registro '+icon('exit')+'</button></div></form>';
+    anchor.before(panel);
+    const form=panel.querySelector('form');const mode=form.elements.mode,vehicles=form.elements.vehicle;
+    const officers=Array.isArray(state.officers)?state.officers:[];
+    form.elements.officer.innerHTML=officers.map(o=>'<option value="'+safe(o.id)+'"'+(o.id===state.user.officerId?' selected':'')+'>'+safe(o.name)+'</option>').join('');
+    function update(){
+      const returning=mode.value==='return';panel.classList.toggle('ep-returning',returning);
+      const available=quickVehicles(mode.value);const selection=vehicles.value;
+      vehicles.innerHTML='<option value="">Selecione a viatura</option>'+available.map(v=>'<option value="'+safe(v.id)+'">'+safe(v.prefix)+' · '+safe(v.plate)+'</option>').join('');
+      if(available.some(v=>v.id===selection))vehicles.value=selection;
+      const selected=available.find(v=>v.id===vehicles.value);
+      form.elements.odometer.value=selected?.odometer==null?'Conferir na tela oficial':numberValue(selected.odometer)+' km';
+      form.elements.destination.required=!returning;
+      panel.querySelector('.ep-quick-submit button').innerHTML=(returning?'Continuar retorno ':'Continuar saída ')+icon(returning?'return':'exit');
+      vehicles.required=true;
+    }
+    mode.addEventListener('change',update);
+    vehicles.addEventListener('change',update);
+    form.addEventListener('submit',event=>{
+      event.preventDefault();const vehicleId=vehicles.value;const record=state.vehicles.find(v=>v.id===vehicleId);if(!record)return;
+      if(mode.value==='return'){
+        const t=state.trips.find(t=>t.vehicleId===vehicleId&&t.status==='Em serviço'&&(state.user.role!=='Motorista'||t.officerId===state.user.officerId));
+        if(!t){notify('Nenhuma movimentação em serviço disponível para retorno.');return;}
+        page='Movimentações';render();
+        if(typeof showAction==='function')showAction(t.id,'return');
+        return;
+      }
+      const officerId=form.elements.officer.value;
+      const destination=form.elements.destination.value.trim();
+      page='Movimentações';render();
+      const full=document.querySelector('#departure');
+      if(!full){notify('Abra a opção Solicitar saída para concluir o registro.');return;}
+      const fill=(name,value)=>{const field=full.elements.namedItem(name);if(field&&value){field.value=value;field.dispatchEvent(new Event('change',{bubbles:true}));}};
+      fill('vehicleId',vehicleId);fill('officerId',officerId);fill('destination',destination);
+      full.scrollIntoView({behavior:'smooth',block:'start'});
+      const first=full.querySelector('[name=initial]:not([readonly]),[name=firstPhoto], [name=inspectionChoice]');
+      if(first)first.focus({preventScroll:true});
+    });
+    update();
+  }
+  function decorateMobile(){
+    const mobile=document.querySelector('.ma-shell');if(!mobile)return;
+    document.body.classList.add('ep-enterprise');
+    const stage=mobile.querySelector('.ma-body'),title=mobile.querySelector('[data-ma-title]');
+    if(!stage||title?.textContent?.trim()!=='Início'||stage.querySelector('.ep-mobile-kpis'))return;
+    const heading=stage.querySelector('h1'),panel=document.createElement('section');
+    panel.className='ep-mobile-kpis';panel.setAttribute('aria-label','Indicadores operacionais');panel.innerHTML=metricMarkup(metrics(),true);
+    (heading||stage.firstElementChild).after(panel);
+    const note=document.createElement('p');note.className='ep-mobile-note';note.textContent='Garagem: viaturas ativas sem saída aberta. Indicadores conforme seu perfil.';panel.after(note);
+    decorateBadges(mobile);
+  }
+  render=function(...args){
+    previousRender.apply(this,args);
+    if(!state?.user||state.needsPasswordChange||state.needsDriverRegistration)return;
+    try{decorateDesktop();decorateMobile();}catch(error){console.error('CEP4 Enterprise: falha de apresentação',error);}
+  };
+})();
+
+  </script>
+  <script type="module" src="auth.js?v=ce-nav-20261027"></script>
+</body>
+</html>
