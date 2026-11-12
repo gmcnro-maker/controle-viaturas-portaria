@@ -209,3 +209,34 @@
 @media (max-width: 420px) {
   #login-panel .ce-access-switch button { flex-direction: column; gap: .15rem; }
 }
+
+#login-panel .ce-access-switch button { margin: 0; width: auto; }
+@media (max-width: 700px) {
+  #login-panel .loginbox {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: .4rem;
+  }
+  #login-panel .loginbox > h2,
+  #login-panel .ce-login-access,
+  #login-panel .loginbox > #login-message { grid-column: 1 / -1; }
+  #login-panel .loginbox > #login-message { grid-row: 4; }
+  #login-panel .loginbox > :is(.ce-recover, [data-install-app]) {
+    grid-row: 3;
+    justify-self: start;
+    margin: .3rem 0 0 !important;
+    min-height: 44px;
+    padding: .2rem .1rem;
+    width: auto;
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+    color: #244a76;
+    font-size: .8rem;
+    text-decoration: underline;
+  }
+  #login-panel .loginbox > [data-install-app] { grid-column: 2; justify-self: end; }
+}
+@media (max-width: 420px) {
+  #login-panel .ce-access-switch button { font-size: .73rem; }
+}
