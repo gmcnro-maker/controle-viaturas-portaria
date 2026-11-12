@@ -126,3 +126,86 @@
   #login-panel .ce-intro-caption h1 { font-size: clamp(1.15rem, 3.5vw, 1.85rem); margin: 0; }
   #login-panel .loginbox { width: calc(100% - 2rem); margin: 0 auto; }
 }
+
+/* Os tipos de acesso compartilham o mesmo espaço no cartão. */
+#login-panel .loginbox h2 {
+  margin: 0 0 .75rem;
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+}
+#login-panel .ce-login-access [hidden] { display: none !important; }
+#login-panel .ce-access-switch {
+  display: flex;
+  gap: .2rem;
+  padding: .2rem;
+  border-radius: .75rem;
+  background: #edf3fa;
+}
+#login-panel .ce-access-switch button {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+  min-height: 44px;
+  padding: .25rem;
+  border: 1px solid transparent;
+  border-radius: .6rem;
+  box-shadow: none;
+  background: transparent;
+  color: #244a76;
+  font-size: .84rem;
+  line-height: 1.15;
+}
+#login-panel .ce-access-switch button[aria-pressed="true"] {
+  border-color: #c7d9ed;
+  background: #fff;
+  color: #103d79;
+}
+#login-panel .ce-access-switch svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+#login-panel .ce-login-access form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .4rem .55rem;
+  margin: .65rem 0 0;
+}
+#login-panel .ce-login-access form > label {
+  display: block;
+  margin: 0;
+  font-size: .84rem;
+  line-height: 1.35;
+}
+#login-panel .ce-login-access form input {
+  min-height: 44px;
+  padding-block: .4rem;
+  margin-top: .2rem;
+  font-size: 1rem;
+}
+#login-panel .ce-login-access form > button[type="submit"] {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: .4rem .7rem;
+  font-size: .92rem;
+}
+#login-panel .loginbox #google-login {
+  min-height: 44px;
+  margin-top: .4rem;
+  padding: .35rem;
+  font-size: .85rem;
+}
+#login-panel .loginbox .ce-recover {
+  width: auto;
+  min-height: 44px;
+  padding: .2rem .1rem;
+  margin: .15rem 0 0;
+  color: #244a76;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-size: .84rem;
+  text-decoration: underline;
+}
+#login-panel .loginbox #login-message:empty { display: none; }
+#login-panel .loginbox #login-message { font-size: .85rem; }
+@media (max-width: 420px) {
+  #login-panel .ce-access-switch button { flex-direction: column; gap: .15rem; }
+}

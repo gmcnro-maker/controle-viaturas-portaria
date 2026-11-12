@@ -6,7 +6,7 @@ const trustedOrigin=origin=>{try{const u=new URL(origin);return u.protocol==='ht
 function receive(event){
  const data=event.data;if(!data||data.channel!==channel||!trustedOrigin(event.origin))return;
  if(data.type==='CEP4_READY'){
-  if(peer&&peer!==event.source)return;peer=event.source;peerOrigin=event.origin;button.disabled=false;message.textContent=window.cep4AppSurface?'Primeiro acesso externo: cadastre-se com Google. Depois da autorização, use login e senha.':'Entre com sua matrícula ou acesso de gestão cadastrado.';return;
+  if(peer&&peer!==event.source)return;peer=event.source;peerOrigin=event.origin;button.disabled=false;message.textContent='';return;
  }
  if(data.type!=='CEP4_RESULT'||event.source!==peer||event.origin!==peerOrigin)return;
  const entry=pending.get(data.id);if(!entry)return;pending.delete(data.id);clearTimeout(entry.timer);
@@ -37,15 +37,56 @@ async function boot(){
  const endpoint=new URL(settings.webAppUrl);if(endpoint.origin!=='https://script.google.com'||!endpoint.pathname.endsWith('/exec'))throw Error('Endereço do serviço CEP4 inválido.');
  auth=getAuth(initializeApp(settings.firebase));auth.languageCode='pt-BR';await setPersistence(auth,inMemoryPersistence);
  window.cep4AppSurface=matchMedia('(max-width:700px)').matches;
- button.hidden=!window.cep4AppSurface;const intro=document.querySelector('.loginbox>p');if(intro)intro.textContent=window.cep4AppSurface?'Primeiro acesso? Cadastre-se com Google. Após autorização, entre com login e senha.':'Acesso exclusivo aos usuários internos cadastrados pelo Gestor Técnico.';
- const police=document.createElement('form');police.id='police-login';police.innerHTML='<label>Matrícula<input name="registration" inputmode="numeric" pattern="[0-9]{3,20}" minlength="3" maxlength="20" required autocomplete="username"></label><label>Senha<input name="password" type="password" required minlength="6" maxlength="128" autocomplete="current-password"></label><button type="submit">Entrar</button><p data-police-help>Use a matrícula e a senha cadastradas pelo Gestor Técnico.</p>';button.before(police);window.cep4EnhancePasswords(police);
+
+ const police=document.createElement('form');police.id='police-login';police.innerHTML='<label>Matrícula<input name="registration" inputmode="numeric" pattern="[0-9]{3,20}" minlength="3" maxlength="20" required autocomplete="username"></label><label>Senha<input name="password" type="password" required minlength="6" maxlength="128" autocomplete="current-password"></label><button type="submit">Entrar</button>';window.cep4EnhancePasswords(police);
 
  police.onsubmit=async event=>{event.preventDefault();const submit=police.querySelector('[type=submit]');submit.disabled=true;try{if(!peer)throw Error('Aguarde a conexão com o sistema.');const registration=police.elements.registration.value.trim();if(!/^\d{3,20}$/.test(registration))throw Error('Informe a matrícula usando somente números.');const email=registration+'@matricula.cep4.invalid',password=police.elements.password.value;const credential=await signInWithEmailAndPassword(auth,email,password);current=credential.user;await window.cep4Load();}catch(error){current=null;await signOut(auth);window.cep4Clear();message.textContent=error.code==='auth/invalid-credential'?'Matrícula ou senha não conferem.':error.code==='auth/email-already-in-use'?'Já existe uma conta para esta matrícula. Use Entrar ou procure P4/Admin.':error.code==='auth/too-many-requests'?'Muitas tentativas. Aguarde antes de tentar novamente.':error.message;}finally{police.elements.password.value='';submit.disabled=false;}};
- const externalLogin=document.createElement('form');externalLogin.id='ce-external-login';externalLogin.innerHTML='<h2>Usuário (Externo)</h2><label>Login<input name="login" required pattern="[A-Za-z0-9._-]{3,40}" maxlength="40" autocomplete="username"></label><label>Senha<input name="password" type="password" minlength="6" maxlength="128" required autocomplete="current-password"></label><button type="submit">Entrar</button>';button.before(externalLogin);externalLogin.hidden=!window.cep4AppSurface;window.cep4EnhancePasswords(externalLogin);externalLogin.onsubmit=async e=>{e.preventDefault();const submit=externalLogin.querySelector('[type=submit]');submit.disabled=true;try{if(!peer)throw Error('Aguarde a conexão com o sistema.');const credential=await signInWithEmailAndPassword(auth,externalLogin.elements.login.value.trim().toLowerCase()+'@externo.cep4.invalid',externalLogin.elements.password.value);current=credential.user;await window.cep4Load();}catch(e){current=null;if(auth)await signOut(auth);window.cep4Clear();message.textContent=localStorage.getItem('ce-blocked')?'':e.code==='auth/invalid-credential'?'Login ou senha não conferem.':e.message==='ACCESS_SILENT'?'':e.message;}finally{externalLogin.elements.password.value='';submit.disabled=false;}};
- const internalEntry=document.createElement('details');internalEntry.className='ce-internal-login';internalEntry.innerHTML='<summary>Acesso interno</summary>';button.after(internalEntry);internalEntry.open=!window.cep4AppSurface;internalEntry.append(police);
- const p4=document.createElement('form');p4.innerHTML='<details><summary>Gestor Técnico</summary><label>Usuário<input name="email" type="text" required autocomplete="username" pattern="[A-Za-z0-9._-]{3,40}" maxlength="40"></label><label>Senha<input name="password" type="password" required autocomplete="current-password"></label><button type="submit">Entrar</button></details>';internalEntry.append(p4);window.cep4EnhancePasswords(p4);
+ const externalLogin=document.createElement('form');externalLogin.id='ce-external-login';externalLogin.innerHTML='<label>Login<input name="login" required pattern="[A-Za-z0-9._-]{3,40}" maxlength="40" autocomplete="username"></label><label>Senha<input name="password" type="password" minlength="6" maxlength="128" required autocomplete="current-password"></label><button type="submit">Entrar</button>';window.cep4EnhancePasswords(externalLogin);externalLogin.onsubmit=async e=>{e.preventDefault();const submit=externalLogin.querySelector('[type=submit]');submit.disabled=true;try{if(!peer)throw Error('Aguarde a conexão com o sistema.');const credential=await signInWithEmailAndPassword(auth,externalLogin.elements.login.value.trim().toLowerCase()+'@externo.cep4.invalid',externalLogin.elements.password.value);current=credential.user;await window.cep4Load();}catch(e){current=null;if(auth)await signOut(auth);window.cep4Clear();message.textContent=localStorage.getItem('ce-blocked')?'':e.code==='auth/invalid-credential'?'Login ou senha não conferem.':e.message==='ACCESS_SILENT'?'':e.message;}finally{externalLogin.elements.password.value='';submit.disabled=false;}};
+ const p4=document.createElement('form');p4.innerHTML='<label>Login<input name="email" type="text" required autocomplete="username" pattern="[A-Za-z0-9._-]{3,40}" maxlength="40"></label><label>Senha<input name="password" type="password" required autocomplete="current-password"></label><button type="submit">Entrar</button>';
+ window.cep4EnhancePasswords(p4);
+
+ const access=document.createElement('div');
+ access.className='ce-login-access';
+ const switcher=document.createElement('div');
+ switcher.className='ce-access-switch';
+ switcher.setAttribute('role','group');
+ switcher.setAttribute('aria-label','Tipo de acesso');
+ button.before(access);
+ access.append(switcher);
+
+ const external=document.createElement('div');
+ external.append(externalLogin,button);
+ const options=[
+  {label:'Interno',panel:police,icon:'<circle cx="12" cy="7" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/>'},
+  {label:'Gestor Técnico',panel:p4,icon:'<path d="M12 22c6-3 8-7 8-12V5l-8-3-8 3v5c0 5 2 9 8 12Z"/><path d="m9 12 2 2 4-4"/>'}
+ ];
+ if(window.cep4AppSurface)options.splice(1,0,{label:'Externo',panel:external,icon:'<path d="M13 4h6v16h-6M3 12h12m-4-4 4 4-4 4"/>'});
+ function selectAccess(selected){
+  for(const option of options){
+   const active=option===selected;
+   option.panel.hidden=!active;
+   option.control.setAttribute('aria-pressed',String(active));
+  }
+ }
+ for(const [index,option] of options.entries()){
+  const control=document.createElement('button');
+  control.type='button';
+  control.innerHTML=`<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${option.icon}</svg><span>${option.label}</span>`;
+  option.panel.id ||= `ce-access-panel-${index}`;
+  control.setAttribute('aria-controls',option.panel.id);
+  control.addEventListener('click',()=>selectAccess(option));
+  option.control=control;
+  switcher.append(control);
+  access.append(option.panel);
+ }
+ if(window.cep4AppSurface){
+  button.hidden=false;
+  button.innerHTML='<span class="google-g" aria-hidden="true">G</span> Primeiro acesso com Google';
+ }
+ selectAccess(window.cep4AppSurface?options[1]:options[0]);
+
  p4.onsubmit=async event=>{event.preventDefault();const submit=p4.querySelector('button[type=submit]');submit.disabled=true;try{if(!peer)throw Error('Aguarde a conexão com o CEP4.');const credential=await signInWithEmailAndPassword(auth,p4.elements.email.value.trim().toLowerCase()+'@acesso.cep4.invalid',p4.elements.password.value);current=credential.user;await window.cep4Load();}catch(error){current=null;await signOut(auth);window.cep4Clear();message.textContent=error.message;}finally{p4.elements.password.value='';submit.disabled=false;}};
- const recover=document.createElement('button');recover.type='button';recover.className='secondary';recover.textContent='Esqueci a senha';recover.onclick=()=>{const d=document.createElement('dialog');d.innerHTML='<form><h2>Redefinir senha</h2><label>Matrícula ou login<input name="login" required maxlength="40" autocomplete="username"></label><p role="status"></p><button>Enviar instruções</button><button type="button" data-close>Fechar</button></form>';document.body.append(d);d.querySelector('[data-close]').onclick=()=>d.close();d.querySelector('form').onsubmit=async e=>{e.preventDefault();try{const result=await window.cep4Recovery(d.querySelector('input').value);d.querySelector('[role=status]').textContent=result.message;}catch(e){d.querySelector('[role=status]').textContent='Não foi possível consultar o serviço agora. Tente mais tarde.';}};d.addEventListener('close',()=>d.remove(),{once:true});d.showModal();};internalEntry.after(recover);
+ const recover=document.createElement('button');recover.type='button';recover.className='secondary';recover.textContent='Esqueci a senha';recover.onclick=()=>{const d=document.createElement('dialog');d.innerHTML='<form><h2>Redefinir senha</h2><label>Matrícula ou login<input name="login" required maxlength="40" autocomplete="username"></label><p role="status"></p><button>Enviar instruções</button><button type="button" data-close>Fechar</button></form>';document.body.append(d);d.querySelector('[data-close]').onclick=()=>d.close();d.querySelector('form').onsubmit=async e=>{e.preventDefault();try{const result=await window.cep4Recovery(d.querySelector('input').value);d.querySelector('[role=status]').textContent=result.message;}catch(e){d.querySelector('[role=status]').textContent='Não foi possível consultar o serviço agora. Tente mais tarde.';}};d.addEventListener('close',()=>d.remove(),{once:true});d.showModal();};recover.classList.add('ce-recover');access.after(recover);
  channel=crypto.randomUUID();endpoint.searchParams.set('channel',channel);frame.src=endpoint.href;
  button.onclick=async()=>{button.disabled=true;try{
   const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
