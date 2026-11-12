@@ -81,8 +81,19 @@
 }
 #login-panel .loginbox {
   container-type: inline-size;
-  padding: clamp(1rem, 3vw, 2.5rem);
+  padding: clamp(.85rem, 2vh, 1.3rem) clamp(1rem, 3vw, 2rem);
 }
+#login-panel .ce-wallpaper { width: clamp(12rem, 24vw, 22rem); max-height: 47svh; }
+#login-panel .loginbox h1 { margin: .3rem 0; }
+#login-panel .loginbox > p,
+#login-panel .loginbox #login-message { margin: .4rem 0; line-height: 1.4; }
+#login-panel .loginbox .login-privacy { margin-top: .55rem !important; }
+#login-panel .loginbox .login-note { margin-top: .6rem !important; padding-top: .55rem; line-height: 1.4; }
+#login-panel #police-login { gap: .5rem; margin: .65rem 0 .4rem; }
+#login-panel .loginbox details { padding: .3rem 0; }
+#login-panel .loginbox #google-login { margin-top: .65rem; }
+#login-panel #police-login input,
+#login-panel #police-login button { min-height: 44px; }
 #login-panel .loginbox input,
 #login-panel .loginbox button {
   max-width: 100%;
@@ -107,10 +118,10 @@
   #login-panel .ce-intro {
     min-height: 0;
     flex-direction: row;
-    padding: clamp(1rem, 3vw, 1.75rem);
+    padding: clamp(.65rem, 2vw, 1.1rem);
     gap: clamp(.65rem, 2.5vw, 1.5rem);
   }
-  #login-panel .ce-wallpaper { width: clamp(3.5rem, 12vw, 6rem); height: auto; }
+  #login-panel .ce-wallpaper { width: clamp(4.5rem, 15vw, 8rem); height: auto; }
   #login-panel .ce-intro-caption { padding: 0; text-align: left; }
   #login-panel .ce-intro-caption h1 { font-size: clamp(1.15rem, 3.5vw, 1.85rem); margin: 0; }
   #login-panel .loginbox { width: calc(100% - 2rem); margin: 0 auto; }
