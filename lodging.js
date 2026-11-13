@@ -118,17 +118,35 @@
   if(mapBlock&&(!block||(!data.slotRelease&&block.slots.length!==1))){
    status.textContent='Atualize o Apps Script para liberar uma vaga de um bloqueio em grupo.';return;
   }
-  busy=true;button.disabled=true;
+  busy=true;serial++;button.disabled=true;
+  const snapshot=data,sessionOwner=owner;
+  button.setAttribute('aria-busy','true');
+  button.querySelector('small').textContent=block?'Liberando…':'Bloqueando…';
+  status.textContent='';
   try{
-   if(block)await api('unblock',{id:block.id,...(data.slotRelease?{slot}:{})});
-   else await api('block',{roomId:mapRoom,start:period.start,end:period.end,slots:[slot]});
-   if(module==='lodging'){
-    mapStart=local(period.start);mapEnd=local(period.end);
-    await load();
-    notify(block?'Vaga liberada.':'Vaga bloqueada.');
-   }
-  }catch(error){if(status.isConnected)status.textContent=error.message;}
-  finally{busy=false;button.disabled=false;}
+   const result=block
+    ? await api('unblock',{id:block.id,...(data.slotRelease?{slot}:{}),mapPeriod:period})
+    : await api('block',{roomId:mapRoom,start:period.start,end:period.end,slots:[slot],mapPeriod:period});
+   if(module!=='lodging'||owner!==sessionOwner)return;
+   if(result?.mapSlot&&data===snapshot){
+    data.blocks=(data.blocks||[]).filter(item=>item.id!==result.id);
+    if(result.active)data.blocks.push(result);
+    const slots=data.maps.find(room=>room.roomId===mapRoom).slots;
+    slots[slots.findIndex(item=>item.number===slot)]=result.mapSlot;
+    const current=[...app.querySelectorAll('[data-map-slot]')].find(el=>el.dataset.mapRoom===mapRoom&&el.dataset.mapSlot===mapSlot);
+    if(current){
+     const focused=current===document.activeElement;
+     const template=document.createElement('template');
+     template.innerHTML=mapBed(mapRoom,result.mapSlot);
+     const replacement=template.content.firstElementChild;
+     current.replaceWith(replacement);
+     if(replacement.matches('button')){replacement.onclick=()=>updateMapBed(replacement);if(focused)replacement.focus({preventScroll:true});}
+    }
+   }else await load();
+   notify(block?'Vaga liberada.':'Vaga bloqueada.');
+  }catch(error){
+   if(status.isConnected){status.textContent=error.message;button.querySelector('small').innerHTML='Vaga '+slot+'<br>'+(block?'Bloqueada':'Disponível');}
+  }finally{busy=false;button.disabled=false;button.removeAttribute('aria-busy');}
  }
  function paint(){document.body.classList.remove('ma-enabled');document.body.classList.toggle('ma-forced',state.user.role==='Motorista');const rows=data?.reservations||[],filtered=rows.filter(r=>!data||roomGroup==='all'||!roomGroup||data.rooms.find(room=>room.id===r.roomId)?.gender===roomGroup).filter(r=>view==='history'?['Cancelada','Indeferida','Expirada','Check-out finalizado'].includes(r.status):!['Cancelada','Indeferida','Expirada','Check-out finalizado'].includes(r.status));recordIndex=Math.max(0,Math.min(recordIndex,filtered.length-1));const shown=(!manager()&&!guard())?filtered.slice(recordIndex,recordIndex+1):filtered;
   app.innerHTML='<section class="pm-app"><header class="pm-header"><div>'+institutionalBrand().replace('Controle de Viaturas','Alojamentos')+'</div><div class="button-row">'+button('Atualizar','refresh','','secondary')+button('Sair','logout','','secondary')+'</div></header><main class="pm-main"><h1 class="pm-page-title">Alojamentos</h1><p data-l-status role="status">'+(data?'':'Carregando alojamentos…')+'</p>'+(data?(manager()||guard()?'':sharedNotice())+'<div class="button-row">'+(!manager()&&!guard()?button('Nova solicitação','request'):'')+(manager()||guard()?button('PDF dos alojados','report','','secondary'):'')+(!guard()?button(view==='history'?'Em andamento':'Histórico',view==='history'?'active':'history','','secondary'):'')+'</div>'+genderNavigation()+(manager()?maps():'')+(guard()?'<h2>Chegadas e hospedagens</h2>':'<h2>'+ (view==='history'?'Histórico':manager()?'Solicitações':'Em andamento')+'</h2>')+'<div class="pm-reservations">'+(shown.length?shown.map(card).join(''):'<p>Nenhum registro nesta lista.</p>')+'</div>'+(!manager()&&!guard()&&filtered.length>1?'<div class="button-row">'+button('Anterior','previous','','secondary')+'<span>'+(recordIndex+1)+' de '+filtered.length+'</span>'+button('Próximo','next','','secondary')+'</div>':''):'')+'</main></section><dialog id="action-dialog"></dialog>';wire(app);
