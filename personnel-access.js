@@ -4,22 +4,28 @@
  const previousAction=showAction;showAction=function(id,action){previousAction(id,action);if(action==='confirm-exit'&&state.trips.find(t=>t.id===id)?.allocationId){const f=document.querySelector('#action-form');if(f){f.querySelector('h2').textContent='Efetivar retirada da viatura';f.querySelector('[type=submit]').textContent='Efetivar';f.elements.expectedReturn?.closest('label')?.remove();}}};
  let lookupSerial=0,externalScreen='home',externalOwner='';
  const manager=()=>!state?.user?.customRole&&!state?.user?.governing&&state?.user?.role==='Administrador';
+ const canBlock=()=>state?.sectionAccess?.grants?.some(g=>g.section==='comando'&&g.level==='Master')===true;
+ window.cep4RosterButton=()=>{
+  if(!manager()&&!canBlock())return null;
+  const button=document.createElement('button');button.type='button';
+  button.textContent='Base de usuários';button.onclick=()=>roster();return button;
+ };
  const local=v=>v?new Date(Date.parse(v)-14400000).toISOString().slice(0,16):'';
  const iso=v=>v+':00-04:00';
  const field=(name,label,type='text',value='',required=true)=>'<label>'+label+'<input name="'+name+'" type="'+type+'" '+(required?'required':'')+' maxlength="'+(name==='reason'?500:180)+'" value="'+esc(value)+'"></label>';
  const rankField=(value='')=>'<label>Posto / graduação<select name="rank" required><option value="">Selecione</option>'+['SD','CB','3º SGT','2º SGT','1º SGT','ST','ASP OF','2º TEN','1º TEN','CAP','MAJ','TEN CEL','CEL'].map(x=>'<option '+(x===value?'selected':'')+'>'+x+'</option>').join('')+'</select></label>';
  function preRegisterOfficer(){modal('Cadastrar policial do CE',field('name','Nome de guerra')+field('registration','Matrícula')+rankField()+field('unit','Unidade de lotação','text','Centro de Ensino'),async(f,d)=>{await api('personnel/register-officer',Object.fromEntries(new FormData(f)));d.close();await roster();notify('Policial pré-cadastrado. A identidade será validada quando a conta for criada.');});}
  function verifyClaim(r){modal('Validar matrícula', '<p>'+esc(r.registration)+' · '+esc(r.name)+'</p><p>Unidade informada: '+esc(r.unit)+' · QSO: '+esc(r.phone)+'</p><p>Confira a identidade do policial. A conta anterior dessa matrícula será desativada; o histórico será preservado.</p><label><input type="checkbox" name="internal"> Identidade conferida e policial lotado no CE</label>'+field('reason','Registro da conferência'),async(f,d)=>{await api('personnel/verify-claim',{id:r.id,internal:f.elements.internal.checked,reason:f.elements.reason.value});d.close();await roster();notify('Conta vinculada ao cadastro policial.');});}
- function modal(title,html,save){let d=document.querySelector('#action-dialog');if(!d){d=document.createElement('dialog');d.id='action-dialog';document.body.append(d);}if(d.open)d.close();d.innerHTML='<form><h2>'+esc(title)+'</h2>'+html+'<p role="alert"></p><div class="button-row"><button type="button" class="secondary" data-close>Fechar</button>'+(save?'<button type="submit">Salvar</button>':'')+'</div></form>';const f=d.querySelector('form');f.querySelector('[data-close]').onclick=()=>d.close();f.onsubmit=e=>e.preventDefault();if(save)f.onsubmit=async e=>{e.preventDefault();const b=f.querySelector('[type=submit]');b.disabled=true;try{await save(f,d);}catch(e){f.querySelector('[role=alert]').textContent=e.message;}finally{b.disabled=false;}};d.showModal();return d;}
+ function modal(title,html,save){let d=document.querySelector('#action-dialog');if(!d){d=document.createElement('dialog');d.id='action-dialog';document.body.append(d);}if(d.open)d.close();d.classList.remove('ce-requests-dialog');d.innerHTML='<form><h2>'+esc(title)+'</h2>'+html+'<p role="alert"></p><div class="button-row"><button type="button" class="secondary" data-close>Fechar</button>'+(save?'<button type="submit">Salvar</button>':'')+'</div></form>';const f=d.querySelector('form');f.querySelector('[data-close]').onclick=()=>d.close();f.onsubmit=e=>e.preventDefault();if(save)f.onsubmit=async e=>{e.preventDefault();const b=f.querySelector('[type=submit]');b.disabled=true;try{await save(f,d);}catch(e){f.querySelector('[role=alert]').textContent=e.message;}finally{b.disabled=false;}};d.showModal();return d;}
  async function roster(initial='ce'){
   try{let data=await api('personnel/lists');const d=modal('Bases de usuários','<p>A base do CE é permanente. Autorizações externas são temporárias e vinculadas a cada reserva aprovada.</p><label>Consultar<select data-directory-view><option value="ce">Base do CE</option><option value="external">Externos autorizados por reserva</option><option value="pending">Cadastros a validar</option></select></label><button type="button" data-pre-register>Cadastrar policial do CE</button><label data-history-label hidden>Autorizações<select data-history><option value="current">Em andamento e programadas</option><option value="history">Histórico de autorizações</option></select></label><label>Buscar<input data-search type="search" placeholder="Nome ou matrícula"></label><div data-personnel-rows></div><p data-directory-status role="status"></p>');
    const view=d.querySelector('[data-directory-view]'),history=d.querySelector('[data-history]'),search=d.querySelector('[data-search]'),box=d.querySelector('[data-personnel-rows]');view.value=['ce','external','pending'].includes(initial)?initial:'ce';
-   function draw(){const external=view.value==='external',rows=data[view.value]||[],current=['Programada','Autorização ativa','Aguardando efetivação','Missão em andamento'];d.querySelector('[data-history-label]').hidden=!external;d.querySelector('[data-pre-register]').hidden=view.value!=='ce';const q=search.value.toLocaleLowerCase('pt-BR');const visible=rows.filter(r=>[r.name,r.registration].join(' ').toLocaleLowerCase('pt-BR').includes(q)&&(!external||(history.value==='current'?current.includes(r.status):!current.includes(r.status))));
+   function draw(){const external=view.value==='external',rows=data[view.value]||[],current=['Programada','Autorização ativa','Aguardando efetivação','Missão em andamento'];d.querySelector('[data-history-label]').hidden=!external;d.querySelector('[data-pre-register]').hidden=view.value!=='ce'||!manager();const q=search.value.toLocaleLowerCase('pt-BR');const visible=rows.filter(r=>[r.name,r.registration].join(' ').toLocaleLowerCase('pt-BR').includes(q)&&(!external||(history.value==='current'?current.includes(r.status):!current.includes(r.status))));
     box.innerHTML=visible.map(r=>'<article class="panel"><h3>'+esc(r.registration)+' · '+esc(r.name)+'</h3><p>'+esc(r.unit||'Unidade não informada')+'</p><strong>'+esc(external?r.status:r.pendingIdentity?'Matrícula aguardando validação':r.pendingAccount?'Aguardando criação da conta':r.deleted?'Acesso excluído':r.frozen?'Acesso congelado':r.active===false?'Desativado':r.internal?'Lotado no CE':'Solicitante sem autorização de uso')+'</strong>'+(external?'<p>'+esc(r.module)+' · '+esc(reservationDate(r.start))+' a '+esc(reservationDate(r.end))+'</p><p>'+(r.vehicle?esc(r.vehicle.prefix)+' · '+esc(r.vehicle.plate):'')+'</p>':'')+'<div class="button-row"><button type="button" data-personnel-edit="'+esc(r.id)+'" '+(r.pendingAccount?'disabled':'')+'>'+(r.pendingIdentity?'Validar matrícula':'Gerenciar acesso')+'</button></div></article>').join('')||'<p>Nenhum registro nesta lista.</p>';
-    box.querySelectorAll('[data-personnel-edit]').forEach(b=>b.onclick=()=>{const r=rows.find(r=>r.id===b.dataset.personnelEdit);if(r.pendingIdentity)return verifyClaim(r);modal('Gerenciar acesso','<p>'+esc(r.registration)+' · '+esc(r.name)+'</p><label><input name="internal" type="checkbox" '+(r.internal?'checked':'')+'> Identidade validada: policial lotado no CE</label><label><input name="frozen" type="checkbox" '+(r.frozen?'checked':'')+'> Congelar acesso</label><label><input name="deleted" type="checkbox" '+(r.deleted?'checked':'')+'> Excluir acesso (histórico preservado)</label>'+field('reason','Motivo'),async(f,dlg)=>{await api('personnel/save',{id:r.accountId||r.id,internal:f.elements.internal.checked,frozen:f.elements.frozen.checked,deleted:f.elements.deleted.checked,reason:f.elements.reason.value});dlg.close();await refresh();notify('Base de usuários atualizada.');});});
+    box.querySelectorAll('[data-personnel-edit]').forEach(b=>b.onclick=()=>{const r=rows.find(r=>r.id===b.dataset.personnelEdit);if(r.pendingIdentity)return verifyClaim(r);modal('Gerenciar acesso','<p>'+esc(r.registration)+' · '+esc(r.name)+'</p><label><input name="internal" type="checkbox" '+(r.internal?'checked':'')+'> Identidade validada: policial lotado no CE</label>'+(canBlock()?'<label><input name="frozen" type="checkbox" '+(r.frozen?'checked':'')+'> Bloquear acesso</label>':'')+'<label><input name="deleted" type="checkbox" '+(r.deleted?'checked':'')+'> Excluir acesso (histórico preservado)</label>'+field('reason','Motivo'),async(f,dlg)=>{await api('personnel/save',{id:r.accountId||r.id,internal:f.elements.internal.checked,...(f.elements.frozen?{frozen:f.elements.frozen.checked}:{}),deleted:f.elements.deleted.checked,reason:f.elements.reason.value});dlg.close();await refresh();notify('Base de usuários atualizada.');});});
    }
    view.onchange=()=>{search.value='';draw();};history.onchange=draw;search.oninput=draw;d.querySelector('[data-pre-register]').onclick=preRegisterOfficer;draw();
-   let pending=false;const owner=state.user.id,timer=setInterval(async()=>{if(!d.open||document.hidden||pending)return;pending=true;try{const next=await api('personnel/lists');if(d.open&&manager()&&state.user.id===owner){data=next;draw();d.querySelector('[data-directory-status]').textContent='';}}catch(e){if(d.open)d.querySelector('[data-directory-status]').textContent='Atualização indisponível neste momento.';}finally{pending=false;}},15000);d.addEventListener('close',()=>clearInterval(timer),{once:true});
+   let pending=false;const owner=state.user.id,timer=setInterval(async()=>{if(!d.open||document.hidden||pending)return;pending=true;try{const next=await api('personnel/lists');if(d.open&&(manager()||canBlock())&&state.user.id===owner){data=next;draw();d.querySelector('[data-directory-status]').textContent='';}}catch(e){if(d.open)d.querySelector('[data-directory-status]').textContent='Atualização indisponível neste momento.';}finally{pending=false;}},15000);d.addEventListener('close',()=>clearInterval(timer),{once:true});
   }catch(e){notify(e.message);}
  }
  function request(){const officer=state.officers.find(o=>o.id===state.user.officerId)||{};modal('Solicitar reserva de viatura','<p>A viatura será definida por P4/Admin após análise. O envio não garante atendimento.</p><div class="formgrid">'+field('name','Nome de guerra','text',officer.name||'')+field('registration','Matrícula','text',officer.registration||'')+rankField(officer.rank||'')+field('phone','Telefone / QSO','tel',officer.phone||'')+field('unit','Unidade de lotação','text',officer.unit||'')+field('reason','Motivo da solicitação')+field('mission','Missão / destino')+field('start','Retirada prevista','datetime-local')+field('end','Devolução prevista','datetime-local')+'</div>',async(f,d)=>{const input=Object.fromEntries(new FormData(f));input.start=iso(input.start);input.end=iso(input.end);await api('external/request',input);d.close();await refresh();notify('Solicitação enviada para P4/Admin.');});const f=document.querySelector('#action-dialog form');f.elements.registration.readOnly=true;}
@@ -43,29 +49,29 @@
    (['Pendente','Aprovada'].includes(r.status)?action('cancel','Cancelar'):'');
  }
  async function requestsPanel(){
-  const anchor=document.querySelector('.ma-body,.workspace .page-heading');
-  if(!manager()||!anchor)return;
-  const existing=document.getElementById('ce-external-requests-table');
-  if(existing){existing.scrollIntoView({block:'nearest'});return;}
-  const panel=document.createElement('section');
-  panel.id='ce-external-requests-table';
-  panel.className='panel ce-request-register';
-  panel.innerHTML='<h2>Solicitações externas de viaturas</h2><p role="status">Consultando solicitações…</p>';
-  anchor.after(panel);
+  if(!manager())return;
+  const dialog=modal('Pedidos externos de viatura','<section class="ce-request-register"><p role="status">Consultando pedidos…</p></section>');
+  dialog.classList.add('ce-requests-dialog');
+  dialog.addEventListener('close',()=>dialog.classList.remove('ce-requests-dialog'),{once:true});
+  const panel=dialog.querySelector('.ce-request-register');
   const serial=++lookupSerial;
   try{
    const data=await api('external/state');
-   if(serial!==lookupSerial||!manager()||!panel.isConnected)return;
-   const rows=data.requests;
+   if(serial!==lookupSerial||!manager()||!dialog.open||!panel.isConnected)return;
+   const all=data.requests||[];
+   const draw=(history=false)=>{
+   const rows=all.filter(r=>history?r.status!=='Pendente':r.status==='Pendente');
    const columns=['Solicitante','Missão / motivo','Período','Situação','Viatura','Ações'];
-   panel.innerHTML='<div class="button-row"><h2>Solicitações externas de viaturas</h2><button type="button" class="secondary" data-close-register>Ocultar</button></div>'+
+   panel.innerHTML=(all.some(r=>r.status!=='Pendente')?'<button type="button" class="secondary" data-request-history>'+(history?'Ver pendentes':'Histórico')+'</button>':'')+
     (rows.length?'<div class="ce-request-scroll" tabindex="0" aria-label="Tabela de solicitações externas"><table><thead><tr>'+columns.map(name=>'<th scope="col">'+name+'</th>').join('')+'</tr></thead><tbody>'+
      rows.map(r=>'<tr><td><strong>'+esc(r.name)+'</strong><small>'+esc([r.rank,r.registration,r.unit,r.phone].filter(Boolean).join(' · '))+'</small></td><td>'+esc(r.mission)+'<small>'+esc(r.reason)+'</small></td><td>'+esc(reservationDate(r.start))+'<small>Até '+esc(reservationDate(r.end))+'</small></td><td>'+esc(r.status)+'</td><td>'+esc(r.vehicle?[r.vehicle.prefix,r.vehicle.plate].filter(Boolean).join(' · '):'—')+'</td><td><div class="ce-request-actions">'+(requestActions(r)||'—')+'</div></td></tr>').join('')+
-     '</tbody></table></div>':'<p>Nenhuma solicitação.</p>');
-   panel.querySelector('[data-close-register]').onclick=()=>panel.remove();
-   wireRequests(panel,rows,data.vehicles);
-   panel.scrollIntoView({block:'nearest'});
-  }catch(e){panel.querySelector('[role=status]').textContent=e.message;panel.insertAdjacentHTML('beforeend','<button type="button" class="secondary">Fechar</button>');panel.querySelector('button').onclick=()=>panel.remove();}
+     '</tbody></table></div>':history?'<p>Nenhum pedido no histórico.</p>':'<p>Não há pedido a serem analisados no presente momento</p>');
+   const toggle=panel.querySelector('[data-request-history]');
+   if(toggle)toggle.onclick=()=>draw(!history);
+   wireRequests(panel,rows,data.vehicles||[]);
+   };
+   draw();
+  }catch(e){const status=panel.querySelector('[role=status]');if(status&&panel.isConnected)status.textContent=e.message;}
  }
  const prior=render;render=function(){
   if(!state||state.needsDriverRegistration)return prior();const external=state.user.role==='Motorista'&&state.access?.internal!==true;
@@ -87,19 +93,16 @@
    document.querySelectorAll('#sidebar .task-nav-group').forEach(g=>{if(!g.querySelector('button'))g.remove();});
    const unitLabel=document.querySelector('#sidebar .unit-label');if(unitLabel)unitLabel.textContent='CE · CHECK-LIST E RESERVA';
   }
-  if(manager()){const nav=document.querySelector('#sidebar nav');for(const [label,action] of [['Bases de usuários',roster],['Solicitações externas',requestsPanel]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;if(action!==requestsPanel)nav?.append(b);const tiles=document.querySelector('.ma-tiles');if(tiles){const tile=b.cloneNode(true);tile.className='ma-tile';tile.onclick=action;tiles.append(tile);}}const main=document.querySelector('.page-heading');
-   if(main&&!main.closest('.ma-shell')){
-    const requests=document.createElement('button');
-    requests.type='button';
-    requests.textContent='Pedidos externos de viatura';
-    requests.onclick=async()=>{
-     requests.disabled=true;
-     try{await requestsPanel();}
-     finally{requests.disabled=false;}
-    };
-    main.append(requests);
+  if(manager()){
+   const heading=app.querySelector('.workspace .page-heading');
+   const host=app.querySelector('.ma-tiles')||heading;
+   if(host){
+    const button=document.createElement('button');
+    button.type='button';button.textContent='Pedidos externos de viatura';
+    if(host.matches('.ma-tiles'))button.className='ma-tile';
+    button.onclick=requestsPanel;host.append(button);
    }
-   if(main&&page==='Painel'){const b=document.createElement('button');b.textContent='Bases de usuários';b.onclick=roster;main.append(b);}}
+  }
  };
  const clear=window.cep4Clear;window.cep4Clear=function(){lookupSerial++;clear();};
 })();

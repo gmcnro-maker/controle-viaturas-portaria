@@ -11,6 +11,7 @@
   main.addEventListener('click',e=>{if(e.target.closest('[data-ce-section]'))view='sections';},true);
   const store=document.createElement('div');store.className='ce-tool-store';store.hidden=true;shell.append(store);
   const people=[...menu.querySelectorAll('[data-ce-access],[data-review-externals],[data-internal-register]')];
+  const roster=window.cep4RosterButton?.();if(roster)people.push(roster);
   const settings=[...menu.querySelectorAll('button')].filter(b=>b.textContent==='Limpar dados de teste');
   const services=[...menu.querySelectorAll('[data-ce-consumer],[data-ce-offers]')];
   [...people,...settings,...services].forEach(b=>store.append(b));

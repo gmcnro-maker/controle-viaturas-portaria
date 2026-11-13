@@ -90,15 +90,11 @@ function compactFleetDashboard(){
 
   const actions=document.createElement('div');
   actions.className='fleet-dashboard-actions';
-  const review=topbar.querySelector('[data-review-externals]');
-  if(review)heading.append(review);
   for(const button of heading.querySelectorAll(':scope > button')){
    const label={
     'Alteração de senhas':['shield','Senhas'],
     'Pedidos externos de viatura':['report','Pedidos externos'],
-    'Bases de usuários':['users','Base de usuários'],
-    'Nova saída':['plus','Nova saída'],
-    'Cadastros externos':['users','Cadastros externos']
+    'Nova saída':['plus','Nova saída']
    }[button.textContent.trim()];
    if(label){
     button.title=button.textContent.trim();
