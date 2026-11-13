@@ -142,3 +142,10 @@ body.ma-forced .ma-shell{background:radial-gradient(ellipse at 100% 0,#e0ebf9,tr
  #app .ma-top { flex-wrap:wrap; }
 }
 @media print { .ce-module-nav,[data-ce-back] { display:none!important; } }
+
+.pm-beds button.pm-bed { background:transparent; border:0; padding:.2rem 0 .5rem; box-shadow:none; }
+.pm-beds button.pm-bed:hover { background:#e9f0fa; }
+.pm-beds button.pm-bed>b { top:.85rem; }
+.pm-beds button.pm-bed:focus-visible { outline:2px solid #2166b4; outline-offset:2px; }
+.pm-beds .pm-bed .pm-icon { width:1.8rem; height:1.8rem; }
+.pm-maps [data-map-status]:empty { display:none; }

@@ -83,11 +83,58 @@
   }
   return '<article class="pm-card">'+roomHeading(r.roomId)+'<strong class="pm-status" data-status="'+txt(r.status)+'">'+icon(['Pendente','Aguardando check-in'].includes(r.status)?'clock':['Cancelada','Indeferida','Expirada'].includes(r.status)?'x':'check')+txt(r.status)+'</strong><p>'+date(r.start)+' a '+date(r.end)+'</p>'+(!guard()?'<p>'+txt(r.gender)+' · '+txt(r.quantity)+' vaga(s) solicitada(s)</p>':'')+(manager()&&state.user.role==='Administrador'&&r.exceptionalAssignment?'<p class="pm-notice">Atribuição excepcional autorizada: '+txt(r.exceptionalAssignment.reason)+'</p>':'')+'<p>Unidade: '+txt(r.unit)+'</p>'+guestList(r)+(r.sharedPeriod?'<p>Há previsão de compartilhamento neste período.</p>':'')+(guard()?'':'<p>Missão: '+txt(r.mission)+'</p>')+(r.cancelNotice?'<p role="alert">'+txt(r.cancelNotice)+'</p>':'')+(r.responsibilityNotice?'<p>'+txt(r.responsibilityNotice)+'</p>':'')+(r.checkout?'<p>'+(r.checkout.hasAlterations?'Com alterações: '+txt(r.checkout.description):'Sem alterações')+'</p>'+r.checkout.photos.map(p=>button('Ver foto','photo',r.id+'|'+p.id,'secondary')).join(''):'')+(!guard()?(r.checkoutHistory||[]).flatMap(c=>c.photos||[]).map(p=>button('Foto do histórico','photo',r.id+'|'+p.id,'secondary')).join(''):'')+'<div class="button-row">'+actions+'</div></article>';
  }
- function maps(){return '<section class="pm-maps"><h2>Vagas</h2><p>Disponível · Reservada · Ocupada · Bloqueada</p><form data-map-period class="formgrid">'+input('start','Consultar de','datetime-local',mapStart)+input('end','Até','datetime-local',mapEnd)+'<button>Consultar período</button></form>'+(data.maps||[]).filter(m=>roomGroup==='all'||data.rooms.find(r=>r.id===m.roomId)?.gender===roomGroup).map(m=>'<article class="pm-card">'+roomHeading(m.roomId)+'<div class="pm-beds">'+m.slots.map(s=>'<span class="pm-bed pm-bed-'+(s.status==='Disponível'?'free':s.status==='Reservada'?'reserved':'busy')+'" title="Vaga '+s.number+' · '+s.status+'"><span aria-hidden="true"><svg viewBox="0 0 40 32" width="32" height="27" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7v22m32-16v16M4 23h32M4 14h32v9H4z"/><path d="M8 10h8v4H8z"/></svg></span><b>'+(s.status==='Disponível'?s.number:'X')+'</b><small>Vaga '+s.number+'<br>'+s.status+'</small></span>').join('')+'</div>'+button('Bloquear vagas','block',m.roomId,'secondary')+'</article>').join('')+(data.blocks||[]).filter(b=>b.active&&(roomGroup==='all'||data.rooms.find(r=>r.id===b.roomId)?.gender===roomGroup)).map(b=>'<p>'+txt(roomName(b.roomId))+' · bloqueio '+date(b.start)+' a '+date(b.end)+' '+button('Liberar bloqueio','unblock',b.id,'secondary')+'</p>').join('')+'</section>';}
+ function mapBed(roomId,slot){
+  const {number,status}=slot,period=data.mapPeriod;
+  const free=status==='Disponível',blocked=status==='Bloqueada';
+  const blocks=blocked?(data.blocks||[]).filter(b=>b.active&&b.roomId===roomId&&b.slots.includes(number)&&Date.parse(b.start)<Date.parse(period.end)&&Date.parse(period.start)<Date.parse(b.end)):[];
+  const block=blocks.length===1?blocks[0]:null;
+  const access=state.sectionAccess;
+  const canEdit=state.user.role==='Administrador'||!access?.configured||access.grants?.some(g=>g.permissions.includes('alojamentos.alterar'));
+  const action=canEdit?(free?'Bloquear':block?'Liberar':''):'';
+  const tag=action?'button':'span';
+  const title='Vaga '+number+' · '+status+(action?' · '+action:'');
+  const blockedLabel=block?' · '+date(block.start)+' a '+date(block.end):'';
+  const attrs=action?' type="button" aria-label="'+txt(action+' vaga '+number+blockedLabel)+'" data-map-room="'+txt(roomId)+'" data-map-slot="'+number+'" data-map-block="'+txt(block?.id||'')+'"':'';
+  const tone=free?'free':status==='Reservada'?'reserved':'busy';
+  return '<'+tag+attrs+' class="pm-bed pm-bed-'+tone+'" title="'+txt(title+blockedLabel)+'"><span aria-hidden="true">'+icon('bed')+'</span><b>'+(free?number:'X')+'</b><small>Vaga '+number+'<br>'+status+'</small></'+tag+'>';
+ }
+ function maps(){
+  const period=data.mapPeriod;
+  return '<section class="pm-maps"><h2>Vagas</h2><p>Disponível · Reservada · Ocupada · Bloqueada</p>'+
+   '<form data-map-period class="formgrid">'+input('start','Consultar de','datetime-local',mapStart||local(period?.start))+input('end','Até','datetime-local',mapEnd||local(period?.end))+'<button>Consultar período</button></form>'+
+   '<p role="status" data-map-status></p>'+
+   (data.maps||[]).filter(m=>roomGroup==='all'||data.rooms.find(r=>r.id===m.roomId)?.gender===roomGroup).map(m=>'<article class="pm-card">'+roomHeading(m.roomId)+'<div class="pm-beds">'+m.slots.map(slot=>mapBed(m.roomId,slot)).join('')+'</div></article>').join('')+'</section>';
+ }
+ async function updateMapBed(button){
+  if(busy||!manager())return;
+  const form=app.querySelector('[data-map-period]'),status=app.querySelector('[data-map-status]');
+  const period=data.mapPeriod;
+  if(!period)return;
+  if(form.elements.start.value!==local(period.start)||form.elements.end.value!==local(period.end)){
+   status.textContent='Consulte o período informado antes de alterar uma vaga.';return;
+  }
+  const {mapRoom,mapSlot,mapBlock}=button.dataset;
+  const slot=Number(mapSlot),block=mapBlock&&(data.blocks||[]).find(b=>b.id===mapBlock);
+  if(mapBlock&&(!block||(!data.slotRelease&&block.slots.length!==1))){
+   status.textContent='Atualize o Apps Script para liberar uma vaga de um bloqueio em grupo.';return;
+  }
+  busy=true;button.disabled=true;
+  try{
+   if(block)await api('unblock',{id:block.id,...(data.slotRelease?{slot}:{})});
+   else await api('block',{roomId:mapRoom,start:period.start,end:period.end,slots:[slot]});
+   if(module==='lodging'){
+    mapStart=local(period.start);mapEnd=local(period.end);
+    await load();
+    notify(block?'Vaga liberada.':'Vaga bloqueada.');
+   }
+  }catch(error){if(status.isConnected)status.textContent=error.message;}
+  finally{busy=false;button.disabled=false;}
+ }
  function paint(){document.body.classList.remove('ma-enabled');document.body.classList.toggle('ma-forced',state.user.role==='Motorista');const rows=data?.reservations||[],filtered=rows.filter(r=>!data||roomGroup==='all'||!roomGroup||data.rooms.find(room=>room.id===r.roomId)?.gender===roomGroup).filter(r=>view==='history'?['Cancelada','Indeferida','Expirada','Check-out finalizado'].includes(r.status):!['Cancelada','Indeferida','Expirada','Check-out finalizado'].includes(r.status));recordIndex=Math.max(0,Math.min(recordIndex,filtered.length-1));const shown=(!manager()&&!guard())?filtered.slice(recordIndex,recordIndex+1):filtered;
   app.innerHTML='<section class="pm-app"><header class="pm-header"><div>'+institutionalBrand().replace('Controle de Viaturas','Alojamentos')+'</div><div class="button-row">'+button('Atualizar','refresh','','secondary')+button('Sair','logout','','secondary')+'</div></header><main class="pm-main"><h1 class="pm-page-title">Alojamentos</h1><p data-l-status role="status">'+(data?'':'Carregando alojamentos…')+'</p>'+(data?(manager()||guard()?'':sharedNotice())+'<div class="button-row">'+(!manager()&&!guard()?button('Nova solicitação','request'):'')+(manager()||guard()?button('PDF dos alojados','report','','secondary'):'')+(!guard()?button(view==='history'?'Em andamento':'Histórico',view==='history'?'active':'history','','secondary'):'')+'</div>'+genderNavigation()+(manager()?maps():'')+(guard()?'<h2>Chegadas e hospedagens</h2>':'<h2>'+ (view==='history'?'Histórico':manager()?'Solicitações':'Em andamento')+'</h2>')+'<div class="pm-reservations">'+(shown.length?shown.map(card).join(''):'<p>Nenhum registro nesta lista.</p>')+'</div>'+(!manager()&&!guard()&&filtered.length>1?'<div class="button-row">'+button('Anterior','previous','','secondary')+'<span>'+(recordIndex+1)+' de '+filtered.length+'</span>'+button('Próximo','next','','secondary')+'</div>':''):'')+'</main></section><dialog id="action-dialog"></dialog>';wire(app);
   app.querySelector('.pm-header .button-row').prepend(moduleNav('lodging'));
   window.cep4AttachManagementBack?.();
+  app.querySelectorAll('[data-map-slot]').forEach(b=>b.onclick=()=>updateMapBed(b));
   const form=app.querySelector('[data-map-period]');if(form)form.onsubmit=e=>{e.preventDefault();mapStart=form.elements.start.value;mapEnd=form.elements.end.value;load();};
  }
  function dialog(title,html,save,stepper=false){serial++;const d=document.querySelector('#action-dialog');d.innerHTML='<form class="pm-dialog"><h2>'+title+'</h2>'+html+'<p role="alert" data-l-error></p><div class="button-row">'+(save?'<button type="submit">'+icon('check')+' Salvar</button>':'')+'<button type="button" data-l-close class="secondary">'+icon('x')+' Fechar</button></div></form>';const f=d.querySelector('form');f.querySelector('[data-l-close]').onclick=()=>d.close();f.onsubmit=async e=>{e.preventDefault();if(!save)return;const b=f.querySelector('[type=submit]');b.disabled=true;busy=true;try{await save(f);d.close();await load();}catch(ex){f.querySelector('[data-l-error]').textContent=ex.message;}finally{busy=false;b.disabled=false;}};d.showModal();if(stepper)wizard(f);return f;}
@@ -121,8 +168,7 @@
   if(action==='checkout'){const f=dialog('Registrar check-out','<section data-step><p>Quem está saindo?</p>'+r.guests.filter(g=>g.checkedInAt&&!g.checkedOutAt).map(g=>'<label><input type="checkbox" name="guest-'+g.id+'" value="'+g.id+'"> '+txt(g.rank+' '+g.name)+'</label>').join('')+'</section><section data-step><div class="button-row"><button type="button" data-condition="yes">Com alterações</button><button type="button" data-condition="no">Sem alterações</button></div><input name="condition" type="hidden"><div data-alterations hidden><label>Relato<textarea name="description" maxlength="1500"></textarea></label>'+button('Ditar relato','dictate','','secondary')+'<label>Fotos obrigatórias (até 3)<input name="photos" type="file" accept="image/*" capture="environment" multiple></label></div></section>',async f=>{if(!f.elements.condition.value)throw Error('Selecione Com alterações ou Sem alterações.');const yes=f.elements.condition.value==='yes',files=[...f.elements.photos.files];await api('checkout',{id,guestIds:[...f.querySelectorAll('input[type=checkbox]:checked')].map(c=>c.value),hasAlterations:yes,description:yes?f.elements.description.value:'',photos:yes?await Promise.all(files.map(photo)):[]});},true);
    f.querySelectorAll('[data-condition]').forEach(b=>b.onclick=()=>{f.elements.condition.value=b.dataset.condition;const yes=b.dataset.condition==='yes';f.querySelector('[data-alterations]').hidden=!yes;f.elements.description.required=yes;f.elements.photos.required=yes;f.querySelectorAll('[data-condition]').forEach(x=>x.setAttribute('aria-pressed',x===b));});f.querySelector('[data-l-action="dictate"]').onclick=()=>{const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){notify('Ditado indisponível neste navegador. Use o microfone do teclado.');return;}const speech=new Speech();speech.lang='pt-BR';speech.onresult=e=>f.elements.description.value+=(f.elements.description.value?' ':'')+e.results[0][0].transcript;speech.start();};return;
   }
-  if(action==='block'){const room=data.rooms.find(r=>r.id===id);dialog('Bloquear vagas','<p>'+txt(roomName(id))+'</p>'+input('start','Início do bloqueio','datetime-local')+input('end','Fim do bloqueio','datetime-local')+'<label><input name="all" type="checkbox"> Bloquear todas as vagas</label><div class="pm-slot-select">'+Array.from({length:room.capacity},(_,i)=>'<label><input name="slot" type="checkbox" value="'+(i+1)+'"> '+(i+1)+'</label>').join('')+'</div><p>Hospedagens existentes permanecem registradas. Cancele a reserva separadamente, se necessário.</p>',f=>api('block',{roomId:id,start:iso(f.elements.start.value),end:iso(f.elements.end.value),all:f.elements.all.checked,slots:[...f.querySelectorAll('[name=slot]:checked')].map(c=>Number(c.value))}));return;}
-  if(action==='unblock'){dialog('Liberar bloqueio','<p>Confirmar liberação das vagas deste bloqueio?</p>',()=>api('unblock',{id}));return;}
+
   if(action==='photo'){const [reservation,photoId]=id.split('|'),file=await api('photo',{id:reservation,photoId});const url=URL.createObjectURL(blob(file));dialog('Foto do alojamento','<img alt="Alteração relatada no alojamento" src="'+url+'" style="max-width:100%;max-height:70dvh">');document.querySelector('#action-dialog').addEventListener('close',()=>URL.revokeObjectURL(url),{once:true});return;}
   if(action==='report'){const file=await api('report');if(pdfUrl)URL.revokeObjectURL(pdfUrl);pdfUrl=URL.createObjectURL(blob(file));dialog('Policiais alojados','<a class="pm-download" href="'+pdfUrl+'" download="'+txt(file.name)+'">Baixar PDF</a><button type="button" data-print>Imprimir</button><iframe title="Relatório de policiais alojados" src="'+pdfUrl+'" style="width:100%;height:60dvh;border:0"></iframe>');document.querySelector('[data-print]').onclick=()=>{try{document.querySelector('#action-dialog iframe').contentWindow.print();}catch{notify('Use a opção Imprimir no leitor do PDF.');}};return;}
  }
