@@ -9,7 +9,9 @@ function filteredTrips(){return state.trips.filter(t=>(dashboardFilter==='Todas'
 function actionButton(t){if(t.status==='Em serviço')return `<button class="text-button" data-return="${esc(t.id)}">Registrar retorno ${svg('arrow',14)}</button>`;if(isFiscal()&&t.status==='Aguardando saída')return `<button class="text-button" data-action="confirm-exit" data-id="${esc(t.id)}">Autorizar saída ${svg('arrow',14)}</button>`;if(isFiscal()&&t.status==='Aguardando entrada')return t.divergence?`<button class="text-button" data-correct="${esc(t.id)}">Corrigir leitura</button>`:`<button class="text-button" data-action="confirm-entry" data-id="${esc(t.id)}">Conferir entrada ${svg('arrow',14)}</button>`;return t.status==='Concluída'?`<span class="completed">${svg('check',15)} Conferida</span>`:'<span class="muted small">Aguardando conferência</span>';}
 const movementDateFormat = new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short',timeZone:'America/Cuiaba'});
 function movementDateCell(trip){
- const dates=[['Solicitação',trip.createdAt],['Saída',trip.exitAt],['Retorno',trip.returnAt],['Entrada',trip.entryAt]];
+ const dates=page==='Painel'
+  ? [['Saída',trip.exitAt],trip.entryAt?['Entrada',trip.entryAt]:['Retorno',trip.returnAt]]
+  : [['Solicitação',trip.createdAt],['Saída',trip.exitAt],['Retorno',trip.returnAt],['Entrada',trip.entryAt]];
  return dates.filter(([,value])=>value&&Number.isFinite(Date.parse(value)))
   .map(([label,value])=>'<small>'+label+' · '+movementDateFormat.format(new Date(value))+'</small>').join('')||'—';
 }
@@ -95,13 +97,13 @@ bind=function(){accessFilterBind();document.querySelectorAll('[data-user-status]
 const taskRender=render;
 render=function(){taskRender();const sidebar=document.querySelector('#sidebar'),nav=sidebar?.querySelector('nav');if(!nav)return;
  const role=state.user.role,p4=role==='Supervisor da Frota - P4';
- const groups=[['Operação',['Painel','Movimentações','Comandante da Guarda']],['',['Viaturas','Policiais']],['Gestão',['Acessos','Relatórios']],['Minha conta',['Integrações']]];
+ const groups=[['Operação',['Painel',...(role==='Administrador'?[]:['Movimentações']),'Comandante da Guarda']],['Frota e equipe',['Viaturas','Policiais']],['Gestão',['Acessos','Relatórios']],['Minha conta',['Integrações']]];
  const buttons=[...nav.querySelectorAll('[data-page]')];nav.innerHTML='';
- for(const [label,keys] of groups){const selected=buttons.filter(b=>keys.includes(b.dataset.page)&&(!p4||['Viaturas','Relatórios','Integrações'].includes(b.dataset.page)));if(!selected.length)continue;const group=document.createElement('div');group.className='task-nav-group';const heading=document.createElement('span');heading.className='task-nav-heading';heading.textContent=label;if(label)group.append(heading);group.append(...selected);nav.append(group);}
+ for(const [label,keys] of groups){const selected=buttons.filter(b=>keys.includes(b.dataset.page)&&!(b.dataset.page==='Comandante da Guarda'&&role==='Administrador')&&(!p4||['Viaturas','Relatórios','Integrações'].includes(b.dataset.page)));if(!selected.length)continue;const group=document.createElement('div');group.className='task-nav-group';const heading=document.createElement('span');heading.className='task-nav-heading';heading.textContent=label;if(label)group.append(heading);group.append(...selected);nav.append(group);}
  sidebar.querySelector('.nav-caption')?.remove();
  const main=document.querySelector('main');main.id='main-content';main.tabIndex=-1;
  const skip=document.createElement('a');skip.className='skip-content';skip.href='#main-content';skip.textContent='Ir para o conteúdo';app.prepend(skip);
- const entries=p4?[['Viaturas','Frota','car'],['Relatórios','Relatórios','report']]:[['Painel','Início','grid'],['Movimentações','Movimentações','arrows'],...(isFiscal()?[['Comandante da Guarda','Conferências','shield']]:[])];
+ const entries=p4?[['Viaturas','Frota','car'],['Relatórios','Relatórios','report']]:[['Painel','Início','grid'],...(role!=='Administrador'?[['Movimentações','Movimentações','arrows']]:[]),...(isFiscal()&&role!=='Administrador'?[['Comandante da Guarda','Conferências','shield']]:[])];
  const dock=document.createElement('nav');dock.className='mobile-dock';dock.setAttribute('aria-label','Atalhos principais');
  dock.innerHTML=entries.map(([key,label,icon])=>'<button type="button" data-go="'+key+'" '+(page===key?'aria-current="page"':'')+'>'+svg(icon,21)+'<span>'+label+'</span></button>').join('')+'<button type="button" data-more>'+svg('menu',21)+'<span>Menu</span></button>';app.append(dock);
  const go=key=>{page=key;dashboardFilter='Todas';searchTerm='';render();window.scrollTo({top:0,behavior:'instant'});document.querySelector('main h1')?.setAttribute('tabindex','-1');document.querySelector('main h1')?.focus({preventScroll:true});};

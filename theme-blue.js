@@ -31,7 +31,7 @@
     const maintenance=document.createElement('button');maintenance.type='button';maintenance.dataset.filter='Manutenção';maintenance.textContent='Em manutenção';maintenance.className=dashboardFilter==='Manutenção'?'selected':'';maintenance.setAttribute('aria-pressed',String(dashboardFilter==='Manutenção'));maintenance.onclick=()=>{dashboardFilter='Manutenção';render();};tabs.append(maintenance);
     if(dashboardFilter==='Manutenção'){
      const vehicles=maintenanceVehicles(state.vehicles,searchTerm);
-     recent.querySelector('h2').textContent='Viaturas em manutenção';recent.querySelector('.panel-head p').textContent='Viaturas indisponíveis para saída.';
+     recent.querySelector('h2').textContent='Viaturas em manutenção';const hint=recent.querySelector('.panel-head p');if(hint)hint.textContent='Viaturas indisponíveis para saída.';
      const search=recent.querySelector('#dashboard-search');if(search){search.placeholder='Buscar prefixo, placa ou modelo';search.setAttribute('aria-label','Buscar viatura em manutenção');}
      recent.querySelector('.tablewrap').innerHTML='<table class="maintenance-table"><thead><tr><th>Viatura / placa</th><th>Modelo</th><th>Situação</th></tr></thead><tbody>'+vehicles.map(v=>'<tr><td><b>'+esc(v.prefix)+'</b><br>'+esc(v.plate)+'</td><td>'+esc(v.model)+'</td><td><span class="badge warn">Em manutenção</span></td></tr>').join('')+'</tbody></table>'+(!vehicles.length?'<div class="empty">Nenhuma viatura em manutenção neste filtro.</div>':'');
      recent.querySelector('.panel-foot').textContent=vehicles.length+' viatura(s) em manutenção';recent.querySelector('[data-page="Movimentações"]').onclick=()=>{page='Viaturas';render();};
@@ -72,7 +72,18 @@ function compactFleetDashboard(){
    attention.querySelector('h2').textContent='Conferências pendentes';
    attention.querySelector('.panel-head p')?.remove();
   }else attention?.remove();
-  layout.querySelector('.recent .panel-head p')?.remove();
+  const recent=layout.querySelector('.recent');
+  recent?.querySelector('.panel-head p')?.remove();
+  const pendingFilter=recent?.querySelector('[data-filter="Pendentes"]');
+  const stat=[...layout.querySelectorAll('.stat')].find(card=>card.querySelector('.stat-top span')?.textContent==='Conferências pendentes');
+  if(stat&&pendingFilter){
+   const button=document.createElement('button');
+   button.type='button';
+   button.className='text-button';
+   button.textContent='Ver pendências';
+   button.onclick=()=>{pendingFilter.click();app.querySelector('.recent')?.scrollIntoView({block:'nearest'});};
+   stat.querySelector('small')?.replaceWith(button);
+  }
   heading.querySelector('.eyebrow')?.remove();
   heading.querySelector('p')?.remove();
   heading.querySelector('h1').textContent='Visão geral da frota';

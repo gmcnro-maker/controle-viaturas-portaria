@@ -6,11 +6,24 @@
  const numberFields=new Set(['initial','final']);
  const name=r=>r.prefix||r.name||(r.destination?`${vehicle(r)?.prefix||'Viatura'} · ${r.destination}`:r.id);
  const originalRender=render;
- render=function(){if(page!=='Integrações')opened=false;originalRender();if(state.user.role!=='Administrador'&&!uiPermit('records.edit')&&!uiPermit('records.delete'))return;
+ render=function(){if(page!=='Integrações')opened=false;originalRender();const p4=state.user.role!=='Administrador'&&!state.user.customRole&&(state.user.role==='Supervisor da Frota - P4'||state.sectionAccess?.grants?.some(g=>g.section==='p4'&&g.level==='Sênior'));
+  if(state.user.role!=='Administrador'&&!p4)return;
   document.querySelectorAll('[data-page]').forEach(b=>{const previous=b.onclick;b.onclick=e=>{opened=false;previous?.(e);};});
-  const group=[...document.querySelectorAll('.task-nav-group')].find(g=>g.querySelector('.task-nav-heading')?.textContent==='Gestão');if(group){const b=document.createElement('button');b.type='button';b.innerHTML=svg('report',18)+'<span>Dados e arquivo anual</span>';b.className=opened?'active':'';if(opened)b.setAttribute('aria-current','page');b.onclick=()=>{opened=true;page='Integrações';render();window.scrollTo(0,0);};group.append(b);}
+  const group=[...document.querySelectorAll('.task-nav-group')].find(g=>g.querySelector('.task-nav-heading')?.textContent==='Gestão')
+   ||(p4?document.querySelector('#sidebar [data-page="Viaturas"]')?.closest('.task-nav-group'):null);if(group){const b=document.createElement('button');b.type='button';b.innerHTML=svg('report',18)+'<span>Dados e arquivo anual</span>';b.className=opened?'active':'';if(opened)b.setAttribute('aria-current','page');b.onclick=()=>{opened=true;page='Integrações';render();window.scrollTo(0,0);};group.append(b);}
   if(!opened)return;const main=document.querySelector('main');document.querySelector('.breadcrumbs b').textContent='Dados e arquivo anual';
-  main.innerHTML='<div class="page-heading"><div><span class="eyebrow">ADMINISTRADOR</span><h1>Dados e arquivo anual</h1><p>Corrija informações, exclua registros e preserve o arquivo de cada ano.</p></div></div><p id="maintenance-status" role="status">Verificando conexão administrativa…</p><div id="maintenance-body" hidden>'+panel()+'</div>';
+  main.innerHTML='<div class="page-heading"><div><h1>Dados e arquivo anual</h1></div></div><p id="maintenance-status" role="status">Verificando conexão administrativa…</p><div id="maintenance-body" hidden>'+panel()+'</div>';
+  if(p4){
+   const status=main.querySelector('#maintenance-status');
+   main.querySelector('#maintenance-body').remove();
+   api('admin/archive/list',{}).then(({archives})=>{
+    status.remove();
+    const panel=document.createElement('section');panel.className='panel';
+    panel.innerHTML='<h2>Arquivo anual</h2>'+ (archives.length?'<ul>'+archives.map(a=>'<li>'+esc(a.year)+' · '+esc(a.trips)+' movimentação(ões)</li>').join('')+'</ul>':'<p>Nenhum arquivo preparado.</p>');
+    main.append(panel);
+   }).catch(error=>{status.textContent=error.message;});
+   return;
+  }
   api('admin/status',{}).then(()=>{if(!opened||!document.querySelector('#maintenance-status'))return;ready=true;document.querySelector('#maintenance-status').textContent='Alterações registradas com autor, data e motivo.';document.querySelector('#maintenance-body').hidden=false;if(state.user.customRole){document.querySelector('#archive-prepare')?.closest('.panel').remove();if(!uiPermit('records.edit')){document.querySelector('#maintenance-edit button[type=submit]')?.remove();document.querySelectorAll('#maintenance-edit input').forEach(i=>i.disabled=true);}if(!uiPermit('records.delete'))document.querySelector('#maintenance-delete')?.remove();}wire();}).catch(e=>{if(!opened||!document.querySelector('#maintenance-status'))return;ready=false;document.querySelector('#maintenance-status').textContent='Esta área precisa do Código.gs atualizado e de uma nova versão da implantação. '+e.message;});
  };
  function panel(){const records=state[entity]||[],record=records.find(r=>r.id===selected),archives=state.archives||[],archive=archives.find(a=>a.id===archiveId);

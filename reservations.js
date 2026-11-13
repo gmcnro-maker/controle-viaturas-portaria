@@ -29,7 +29,13 @@ function reservationNotice(r){return r.driverName+' · '+reservationDate(r.start
   dialog.querySelector('[data-reservation-close]').onclick=()=>dialog.close();dialog.showModal();
  };
  const previousRender=render;render=function(){previousRender();if(!state||state.needsDriverRegistration||(!reservationUiManager()&&!reservationUiCreate()))return;
-  const nav=document.querySelector('#sidebar nav');if(nav){const button=document.createElement('button');button.type='button';button.dataset.reservationNav='true';button.innerHTML=svg('clock',18)+'<span>Reservas</span>';button.onclick=()=>showAction('','reservations');nav.append(button);}
+  const manager=['Administrador','Supervisor da Frota - P4'].includes(state.user.role);
+  const nav=manager
+   ? [...document.querySelectorAll('#sidebar .task-nav-group')].find(group=>group.querySelector('[data-page="Viaturas"]'))
+   : state.user.role==='Comandante da Guarda'
+    ? document.querySelector('.page-heading')
+    : document.querySelector('#sidebar nav');
+  if(nav){const button=document.createElement('button');button.type='button';button.dataset.reservationNav='true';button.innerHTML=svg('clock',18)+'<span>Reservas de viaturas</span>';button.onclick=()=>showAction('','reservations');nav.append(button);}
   const form=document.querySelector('#departure');if(form){const expectedLabel=document.createElement('label');expectedLabel.innerHTML='Devolução prevista<input name="expectedReturn" type="datetime-local"><small>Informe para verificar se a saída interfere em alguma reserva.</small>';form.elements.destination.closest('label').after(expectedLabel);form.elements.expectedReturn.value=new Date(Date.now()-14400000).toISOString().slice(0,16);const vehicleSelect=form.elements.vehicleId,note=document.createElement('p');note.setAttribute('role','status');vehicleSelect.closest('label').after(note);const check=()=>{const rows=liveReservations().filter(r=>r.vehicleId===vehicleSelect.value),own=rows.find(r=>r.own&&r.status==='Autorizada'&&Date.parse(r.start)<=Date.now()&&r.end);form.elements.expectedReturn.required=rows.length>0;if(own&&!form.elements.expectedReturn.value)form.elements.expectedReturn.value=new Date(Date.parse(own.end)-14400000).toISOString().slice(0,16);note.textContent=rows.length?rows.map(reservationNotice).join(' | '):'';};vehicleSelect.addEventListener('change',check);check();}
  };
 })();
