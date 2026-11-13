@@ -73,8 +73,6 @@ dialog::backdrop{background:#071a35a6}.dialog-error,[role=alert]:not(:empty){col
  .fleet-dashboard-actions { display: flex; flex-wrap: wrap; gap: .35rem; }
  .fleet-dashboard-compact [data-fleet-lights] { padding: .7rem .8rem; margin-bottom: .75rem; }
  .fleet-dashboard-compact [data-fleet-lights] h2 { font-size: 1rem; margin: 0 0 .5rem; }
- .fleet-dashboard-compact [data-fleet-lights] > div { grid-template-columns: repeat(auto-fit,minmax(min(100%,11.5rem),1fr)) !important; gap: .45rem !important; }
- .fleet-dashboard-compact [data-fleet-lights] article { padding: .45rem .55rem !important; gap: .28rem !important; font-size: .85rem; overflow-wrap: anywhere; }
  .fleet-dashboard-compact .stats { gap: .5rem; margin-bottom: .75rem; grid-template-columns: repeat(auto-fit,minmax(min(100%,9rem),1fr)); }
  .fleet-dashboard-compact .stat { padding: .55rem .65rem; }
  .fleet-dashboard-compact .stat-top { font-size: .8rem; }
@@ -97,3 +95,19 @@ dialog::backdrop{background:#071a35a6}.dialog-error,[role=alert]:not(:empty){col
  .fleet-dashboard-compact .recent :is(th,td) { white-space: normal; overflow-wrap: anywhere; }
  .fleet-dashboard-compact .recent .tabs button { min-height: 2.1rem; padding: .3rem .5rem; }
 }
+
+.fleet-status-heading,.fleet-status-legend,.fleet-light-label {
+ display:flex; align-items:center; flex-wrap:wrap; gap:.45rem .85rem;
+}
+.fleet-status-heading { justify-content:space-between; margin-bottom:.5rem; }
+.fleet-status-heading h2,.fleet-dashboard-compact .fleet-status-heading h2 { margin:0; }
+.fleet-status-legend { list-style:none; margin:0; padding:0; font-size:.78rem; color:#385779; }
+.fleet-status-legend li,.fleet-status-grid article { display:flex; align-items:center; gap:.5rem; }
+.fleet-status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,9rem),1fr)); gap:.45rem; }
+.fleet-status-grid article { border:1px solid #d7e3ef; border-radius:.65rem; padding:.4rem .6rem; min-width:0; }
+.fleet-status-grid article b { flex:1; overflow-wrap:anywhere; font-size:.85rem; }
+.fleet-vehicle-icon { width:1.6rem; height:1.6rem; flex:none; color:#215d99; }
+.fleet-led { width:.8rem; height:.8rem; border-radius:50%; flex:none; border:1px solid #ffffff90;
+ background:radial-gradient(circle at 32% 28%,#fff,var(--fleet-led) 55%);
+ box-shadow:0 0 4px var(--fleet-led); }
+.fleet-status-accessible { position:absolute; clip-path:inset(50%); width:1px; height:1px; overflow:hidden; white-space:nowrap; }
