@@ -125,3 +125,20 @@ body.ma-forced .ma-shell{background:radial-gradient(ellipse at 100% 0,#e0ebf9,tr
 .pm-module-buttons .pm-module-card small{font-size:.65rem;margin-top:2px}
 @media(max-width:540px){.pm-module-buttons,.pm-portal .pm-module-buttons{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pm-module-buttons .pm-module-card,#patrimony-picker .pm-module-card{min-height:84px;flex-direction:column;gap:5px;padding:8px;align-items:center;text-align:center;justify-content:center}.pm-module-buttons .pm-module-card>.pm-icon:first-child{width:26px;height:26px;padding:3px}.pm-module-buttons .pm-module-card .pm-button-label{font-size:.88rem;flex:0}}
 @media(max-width:320px){.pm-module-buttons,.pm-portal .pm-module-buttons{grid-template-columns:1fr}.pm-module-buttons .pm-module-card,#patrimony-picker .pm-module-card{min-height:60px;flex-direction:row;text-align:left;justify-content:flex-start}}
+
+/* Module shortcuts reuse the active session. Names remain available to assistive technology. */
+.ce-module-nav { display:inline-flex; align-items:center; gap:.25rem; }
+#app :is(.ce-module-nav button, [data-ce-back]) {
+ display:inline-flex; align-items:center; justify-content:center; gap:.3rem;
+ min-height:40px; padding:.35rem .55rem; margin:0; font-size:.84rem;
+}
+#app :is(.ce-module-nav button, [data-ce-back]) svg { width:19px; height:19px; flex:none; }
+#app .ce-module-nav [data-l-action="home"] .pm-button-label { position:absolute; clip-path:inset(50%); width:1px; height:1px; overflow:hidden; }
+.pm-main .pm-page-title { margin-bottom:.4rem; font-size:clamp(1.25rem,2.5vw,1.65rem); }
+.pm-main [data-l-status]:empty { display:none; }
+@media (max-width:700px) {
+ #app :is(.ce-module-nav button, [data-ce-back]) { min-width:44px; min-height:44px; padding:.3rem; }
+ #app .ma-top :is(.ce-module-nav .pm-button-label,[data-ce-back] span) { position:absolute; clip-path:inset(50%); width:1px; height:1px; overflow:hidden; }
+ #app .ma-top { flex-wrap:wrap; }
+}
+@media print { .ce-module-nav,[data-ce-back] { display:none!important; } }

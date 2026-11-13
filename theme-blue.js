@@ -77,16 +77,6 @@ function compactFleetDashboard(){
   heading.querySelector('p')?.remove();
   heading.querySelector('h1').textContent='Visão geral da frota';
 
-  const management=topbar.querySelector('[data-ce-back]');
-  const services=topbar.querySelector('[data-pm-switch]');
-  if(management){
-   management.innerHTML=svg('grid',16)+' Gestão do CE';
-   topbar.querySelector('.breadcrumbs')?.prepend(management);
-  }
-  if(services){
-   services.innerHTML=svg('link',16)+' Serviços do CE';
-   topbar.querySelector('.topbar-right')?.prepend(services);
-  }
   const actions=document.createElement('div');
   actions.className='fleet-dashboard-actions';
   const review=topbar.querySelector('[data-review-externals]');

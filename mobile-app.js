@@ -94,6 +94,7 @@
   const role=state.user.role;const shell=make('section','ma-shell');shell.setAttribute('aria-label','Navegação por telas');
   shell.innerHTML='<header class="ma-brand">'+institutionalBrand()+'</header><div class="ma-top"><button type="button" class="secondary" data-ma-back>'+svg('arrow',18)+' Voltar</button><b data-ma-title></b><button type="button" class="icon-button" data-ma-refresh aria-label="Atualizar registros">'+svg('refresh',19)+'</button></div><div class="ma-stage"><div class="ma-body"></div></div><nav class="ma-bottom" aria-label="Navegação do celular"><button type="button" data-ma-home>'+svg('grid',21)+'<span>Início</span></button><button type="button" data-ma-account>'+svg('users',21)+'<span>Conta</span></button></nav>';
   app.append(shell);document.body.classList.add('ma-enabled');
+  window.cep4AttachVehicleNav?.();
   const body=shell.querySelector('.ma-body'),title=shell.querySelector('[data-ma-title]');shell.querySelector('[data-ma-back]').disabled=route.home===true;
   shell.querySelector('[data-ma-home]').onclick=()=>{if(typeof window.cep4GoHome==='function')window.cep4GoHome();else navigate({home:true},true);};
   

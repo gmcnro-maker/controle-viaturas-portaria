@@ -17,7 +17,7 @@
   const sections=menu.querySelector('[data-ce-home]'),personal=menu.querySelector('[data-ce-personal]'),logout=menu.querySelector('[data-ce-logout]');
   const resetSection=sections?.onclick;
   if(sections){label(sections,'Início','home');const action=sections.onclick;sections.onclick=e=>{view='home';action(e);};}
-  if(personal)label(personal,'Modo usuário','user');if(logout)label(logout,'Sair','exit');
+  if(personal)label(personal,'Meu uso','user');if(logout)label(logout,'Sair','exit');
   const nav=(name,key,next)=>{const b=document.createElement('button');b.type='button';b.dataset.ceNav=next;label(b,name,key);b.onclick=()=>{view=next;if(next==='home'&&resetSection)resetSection();else render();};return b;};
   if(services.length)menu.insertBefore(nav('Serviços','services','services'),personal||logout);
   if(people.length)menu.insertBefore(nav('Pessoas','people','people'),personal||logout);
@@ -29,7 +29,6 @@
    const group={people,services,settings}[view];
    if(!group.length){view='home';}else{
     main.replaceChildren();const h=document.createElement('h2');h.textContent={people:'Pessoas',services:'Serviços',settings:'Configurações'}[view];main.append(h);
-    const p=document.createElement('p');p.textContent={people:'Cadastros e permissões do seu acesso.',services:'Consulte o catálogo ou gerencie as ofertas autorizadas.',settings:'Ferramentas exclusivas do Gestor Técnico.'}[view];main.append(p);
     const actions=document.createElement('div');actions.className='ce-shortcuts';main.append(actions);
     group.forEach(b=>{const name=b.hasAttribute('data-ce-consumer')?'Abrir catálogo':b.hasAttribute('data-ce-offers')?'Gerenciar ofertas':b.textContent;label(b,name,view==='people'?'people':view==='services'?'services':'settings');actions.append(b);});
    }
@@ -43,5 +42,12 @@
    if(pending||returns){const note=document.createElement('p');note.className='ce-task-summary';note.textContent=pending+' saída(s) aguardando autorização · '+returns+' retorno(s) aguardando conferência';main.prepend(note);}
   }
  }
- render=function(){previous();decorate();};
+ render=function(){
+  previous();
+  decorate();
+  if(window.cep4CurrentModule?.()==='vehicles'){
+   window.cep4AttachVehicleNav?.();
+   window.cep4AttachManagementBack?.();
+  }
+ };
 })();
