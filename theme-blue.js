@@ -55,6 +55,7 @@ function maintenanceVehicles(vehicles,query=''){const search=query.trim().toLoca
 
 /* The final render includes the navigation and access controls added by other modules. */
 function compactFleetDashboard(){
+ let recentExpanded=true, dashboardOwner;
  const previous=render;
  render=function(){
   previous();
@@ -74,15 +75,48 @@ function compactFleetDashboard(){
   }else attention?.remove();
   const recent=layout.querySelector('.recent');
   recent?.querySelector('.panel-head p')?.remove();
-  const pendingFilter=recent?.querySelector('[data-filter="Pendentes"]');
-  const stat=[...layout.querySelectorAll('.stat')].find(card=>card.querySelector('.stat-top span')?.textContent==='Conferências pendentes');
-  if(stat&&pendingFilter){
+  if(dashboardOwner!==state.user.id){dashboardOwner=state.user.id;recentExpanded=true;}
+  if(recent){
+   const header=recent.querySelector('.panel-head');
+   const content=document.createElement('div');
+   content.id='recent-movements-content';
+   while(header.nextSibling)content.append(header.nextSibling);
+   recent.append(content);
+   const toggle=document.createElement('button');
+   toggle.type='button';toggle.className='secondary recent-toggle';
+   toggle.setAttribute('aria-controls',content.id);
+   const setExpanded=()=>{
+    content.hidden=!recentExpanded;
+    toggle.setAttribute('aria-expanded',String(recentExpanded));
+    toggle.innerHTML=svg('chevron',16)+(recentExpanded?' Ocultar':' Mostrar');
+   };
+   toggle.onclick=()=>{recentExpanded=!recentExpanded;setExpanded();};
+   header.append(toggle);setExpanded();
+
+   const tabs=content.querySelector('.tabs');
+   const divergence=document.createElement('button');
+   divergence.type='button';divergence.dataset.filter='Divergências';
+   divergence.textContent='Divergências';
+   divergence.classList.toggle('selected',dashboardFilter==='Divergências');
+   divergence.setAttribute('aria-pressed',String(dashboardFilter==='Divergências'));
+   divergence.onclick=()=>{dashboardFilter='Divergências';render();};
+   tabs?.append(divergence);
+  }
+  for(const card of layout.querySelectorAll('.stats .stat')){
+   const label=card.querySelector('.stat-top span')?.textContent;
+   card.querySelector('small')?.remove();
+   const filter={'Conferências pendentes':'Pendentes','Divergências':'Divergências'}[label];
+   if(!filter||!recent)continue;
    const button=document.createElement('button');
-   button.type='button';
-   button.className='text-button';
-   button.textContent='Ver pendências';
-   button.onclick=()=>{pendingFilter.click();app.querySelector('.recent')?.scrollIntoView({block:'nearest'});};
-   stat.querySelector('small')?.replaceWith(button);
+   button.type='button';button.className='secondary stat-view';
+   button.textContent='Ver';button.setAttribute('aria-label','Ver '+label.toLowerCase());
+   button.onclick=()=>{
+    recentExpanded=true;dashboardFilter=filter;searchTerm='';render();
+    const section=app.querySelector('.recent');
+    section?.querySelector('.tabs .selected')?.focus({preventScroll:true});
+    section?.scrollIntoView({block:'nearest'});
+   };
+   card.append(button);
   }
   heading.querySelector('.eyebrow')?.remove();
   heading.querySelector('p')?.remove();

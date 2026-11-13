@@ -111,3 +111,12 @@ dialog::backdrop{background:#071a35a6}.dialog-error,[role=alert]:not(:empty){col
  background:radial-gradient(circle at 32% 28%,#fff,var(--fleet-led) 55%);
  box-shadow:0 0 4px var(--fleet-led); }
 .fleet-status-accessible { position:absolute; clip-path:inset(50%); width:1px; height:1px; overflow:hidden; white-space:nowrap; }
+
+.fleet-dashboard-compact #recent-movements-content[hidden] { display:none; }
+.fleet-dashboard-compact .recent-toggle,.fleet-dashboard-compact .stat-view {
+ min-height:2rem; padding:.25rem .55rem; font-size:.8rem;
+}
+.fleet-dashboard-compact .recent-toggle { display:inline-flex; align-items:center; gap:.3rem; }
+.fleet-dashboard-compact .recent-toggle[aria-expanded="true"] svg { transform:rotate(-90deg); }
+.fleet-dashboard-compact .recent-toggle[aria-expanded="false"] svg { transform:rotate(90deg); }
+.fleet-dashboard-compact .stat-view { margin-top:.25rem; }
