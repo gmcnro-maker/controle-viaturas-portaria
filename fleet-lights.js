@@ -28,7 +28,7 @@ function fleetVehicleIcon(vehicle){
  const vehicles=state.vehicles.filter(v=>!v.deleted).map(v=>({vehicle:v,status:fleetLightStatus(v,state.trips||[])}));
  const legend=Object.values(fleetStatuses).filter(s=>s!==fleetStatuses.inactive||vehicles.some(v=>v.status===s));
  const panel=document.createElement('section');panel.className='panel';panel.dataset.fleetLights='true';
- panel.innerHTML='<header class="fleet-status-heading"><h2>Status das viaturas</h2><ul class="fleet-status-legend" aria-label="Legenda de status">'+legend.map(s=>'<li>'+fleetLed(s)+s.label+'</li>').join('')+'</ul></header><div class="fleet-status-grid">'+vehicles.map(({vehicle:v,status})=>'<article title="'+esc([v.prefix,v.plate,status.label].join(' · '))+'">'+fleetVehicleIcon(v)+'<b>'+esc(v.plate||v.prefix)+'</b><span class="fleet-status-accessible">'+esc(status.label)+'</span>'+fleetLed(status)+'</article>').join('')+'</div>';
+ panel.innerHTML='<header class="fleet-status-heading"><h2>Status</h2><ul class="fleet-status-legend" aria-label="Legenda de status">'+legend.map(s=>'<li>'+fleetLed(s)+s.label+'</li>').join('')+'</ul></header><div class="fleet-status-grid">'+vehicles.map(({vehicle:v,status})=>'<article title="'+esc([v.prefix,v.plate,status.label].join(' · '))+'">'+fleetVehicleIcon(v)+'<b>'+esc(v.plate||v.prefix)+'</b><span class="fleet-status-accessible">'+esc(status.label)+'</span>'+fleetLed(status)+'</article>').join('')+'</div>';
  host.after(panel);
 };})();
 

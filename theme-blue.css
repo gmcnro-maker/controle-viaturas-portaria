@@ -120,3 +120,7 @@ dialog::backdrop{background:#071a35a6}.dialog-error,[role=alert]:not(:empty){col
 .fleet-dashboard-compact .recent-toggle[aria-expanded="true"] svg { transform:rotate(-90deg); }
 .fleet-dashboard-compact .recent-toggle[aria-expanded="false"] svg { transform:rotate(90deg); }
 .fleet-dashboard-compact .stat-view { margin-top:.25rem; }
+
+.fleet-dashboard-compact .fleet-back-arrow { display:inline-flex; transform:rotate(180deg); }
+.fleet-dashboard-compact .stat-view-message { margin-inline-start:.4rem; font-size:.8rem; }
+.movements-table .vehicle-icon .fleet-vehicle-icon { width:1.15rem; height:1.15rem; }

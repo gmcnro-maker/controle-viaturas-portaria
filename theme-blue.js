@@ -65,6 +65,8 @@ function compactFleetDashboard(){
   const topbar=layout.querySelector('.topbar');
   if(!heading||!topbar)return;
   layout.classList.add('fleet-dashboard-compact');
+  const back=topbar.querySelector('[data-ce-back]');
+  if(back)back.innerHTML='<span class="fleet-back-arrow">'+svg('arrow',20)+'</span>';
 
   layout.querySelector('.workspace-context')?.remove();
   layout.querySelector('.task-shortcuts')?.remove();
@@ -111,12 +113,16 @@ function compactFleetDashboard(){
    button.type='button';button.className='secondary stat-view';
    button.textContent='Ver';button.setAttribute('aria-label','Ver '+label.toLowerCase());
    button.onclick=()=>{
+    const hasRows=state.trips.some(t=>filter==='Pendentes'?t.status.startsWith('Aguardando'):t.status!=='Concluída'&&t.divergence);
+    if(!hasRows){card.querySelector('[role="status"]').textContent='Não há';return;}
     recentExpanded=true;dashboardFilter=filter;searchTerm='';render();
     const section=app.querySelector('.recent');
     section?.querySelector('.tabs .selected')?.focus({preventScroll:true});
     section?.scrollIntoView({block:'nearest'});
    };
-   card.append(button);
+   const status=document.createElement('span');
+   status.setAttribute('role','status');status.className='stat-view-message';
+   card.append(button,status);
   }
   heading.querySelector('.eyebrow')?.remove();
   heading.querySelector('p')?.remove();
