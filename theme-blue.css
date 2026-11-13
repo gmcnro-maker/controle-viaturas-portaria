@@ -55,3 +55,45 @@ dialog::backdrop{background:#071a35a6}.dialog-error,[role=alert]:not(:empty){col
 @media print{.workspace-context{display:none!important}.panel table{display:table!important}.panel table thead{display:table-header-group!important}.panel table tbody{display:table-row-group!important}.panel table tr{display:table-row!important}.panel table td{display:table-cell!important}.panel table td:before{display:none!important}}
 .recent .maintenance-table{min-width:0;width:100%;table-layout:fixed}.recent .maintenance-table th,.recent .maintenance-table td{white-space:normal;overflow-wrap:anywhere}
 .driver-fleet h2{margin-bottom:1rem}.fleet-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin-bottom:1rem}.fleet-tabs button{min-width:0;padding:.65rem .4rem;line-height:1.35;font-size:.9rem}.fleet-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.fleet-status-card{display:flex;align-items:center;justify-content:space-between;gap:.7rem;padding:.8rem;border:1px solid #d8e5f3;border-radius:.75rem;min-width:0;background:white}.fleet-status-card b,.fleet-status-card div>span{display:block;overflow-wrap:anywhere}.fleet-status-card .badge{white-space:normal;max-width:9rem;text-align:center}.fleet-pager{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1rem}@media(max-width:700px){.fleet-cards{grid-template-columns:minmax(0,1fr)}.driver-fleet{padding:1rem}.fleet-status-card{padding:.7rem}}
+
+@media screen {
+ .fleet-dashboard-compact .topbar { min-height: 3.3rem; height: auto; padding: .4rem clamp(.75rem, 2vw, 1.45rem); gap: .4rem .75rem; }
+ .fleet-dashboard-compact :is(.breadcrumbs,.topbar-right) { gap: .45rem; }
+ .fleet-dashboard-compact .breadcrumbs > span,
+ .fleet-dashboard-compact .breadcrumbs > svg,
+ .fleet-dashboard-compact .breadcrumbs > b { display: none; }
+ .fleet-dashboard-compact .topbar :is([data-ce-back],[data-pm-switch]),
+ .fleet-dashboard-compact .fleet-dashboard-actions button { display: inline-flex; align-items: center; gap: .35rem; margin: 0; padding: .4rem .6rem; min-height: 2.2rem; font-size: .85rem; line-height: 1.25; }
+ .fleet-dashboard-compact .fleet-dashboard-actions svg { flex-shrink: 0; }
+ .fleet-dashboard-compact .fleet-dashboard-actions button:not([data-page]) { background: #fff; border: 1px solid #c9dcf0; color: #164d87; }
+ .fleet-dashboard-compact .fleet-dashboard-actions button:not([data-page]):hover { background: #e6f0fd; }
+ .fleet-dashboard-compact .workspace main { padding: clamp(.75rem, 2vw, 1.45rem); }
+ .fleet-dashboard-compact .page-heading { gap: .55rem 1rem; margin-bottom: .8rem; align-items: center; }
+ .fleet-dashboard-compact .page-heading h1 { font-size: clamp(1.25rem, 2vw, 1.65rem); margin: 0; }
+ .fleet-dashboard-actions { display: flex; flex-wrap: wrap; gap: .35rem; }
+ .fleet-dashboard-compact [data-fleet-lights] { padding: .7rem .8rem; margin-bottom: .75rem; }
+ .fleet-dashboard-compact [data-fleet-lights] h2 { font-size: 1rem; margin: 0 0 .5rem; }
+ .fleet-dashboard-compact [data-fleet-lights] > div { grid-template-columns: repeat(auto-fit,minmax(min(100%,11.5rem),1fr)) !important; gap: .45rem !important; }
+ .fleet-dashboard-compact [data-fleet-lights] article { padding: .45rem .55rem !important; gap: .28rem !important; font-size: .85rem; overflow-wrap: anywhere; }
+ .fleet-dashboard-compact .stats { gap: .5rem; margin-bottom: .75rem; grid-template-columns: repeat(auto-fit,minmax(min(100%,9rem),1fr)); }
+ .fleet-dashboard-compact .stat { padding: .55rem .65rem; }
+ .fleet-dashboard-compact .stat-top { font-size: .8rem; }
+ .fleet-dashboard-compact .stat strong { font-size: 1.5rem; margin: .12rem 0; }
+ .fleet-dashboard-compact .stat small { font-size: .75rem; line-height: 1.3; }
+ .fleet-dashboard-compact #sidebar .unit-label,
+ .fleet-dashboard-compact #sidebar .rail-bottom { display: none; }
+ .fleet-dashboard-compact #sidebar .brand { padding-bottom: .7rem; }
+ .fleet-dashboard-compact #sidebar .institution-marks img { height: 2.75rem; }
+ .fleet-dashboard-compact #sidebar .task-nav-group { gap: .15rem; margin-bottom: .5rem; }
+ .fleet-dashboard-compact #sidebar nav button { min-height: 2.2rem; padding-block: .35rem; font-size: .86rem; }
+}
+
+@media screen {
+ .fleet-dashboard-compact .dashboard-grid { grid-template-columns: minmax(0,1fr); gap: .75rem; }
+ .fleet-dashboard-compact :is(.recent,.attention) .panel-head { padding: .65rem .8rem; }
+ .fleet-dashboard-compact .panel-head h2 { font-size: 1rem; }
+ .fleet-dashboard-compact .table-tools { padding: 0 .8rem .6rem; gap: .4rem; }
+ .fleet-dashboard-compact .recent table { min-width: 0; }
+ .fleet-dashboard-compact .recent :is(th,td) { white-space: normal; overflow-wrap: anywhere; }
+ .fleet-dashboard-compact .recent .tabs button { min-height: 2.1rem; padding: .3rem .5rem; }
+}

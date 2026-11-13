@@ -52,3 +52,62 @@
 })();
 function maintenanceVehicles(vehicles,query=''){const search=query.trim().toLocaleLowerCase('pt-BR');return vehicles.filter(v=>!v.deleted&&v.status==='Manutenção'&&(!search||[v.prefix,v.plate,v.model].join(' ').toLocaleLowerCase('pt-BR').includes(search)));}
 
+
+/* The final render includes the navigation and access controls added by other modules. */
+function compactFleetDashboard(){
+ const previous=render;
+ render=function(){
+  previous();
+  const layout=app.querySelector('.layout');
+  if(!layout||page!=='Painel'||state?.user?.role!=='Administrador'||state.user.customRole)return;
+  const heading=layout.querySelector('.page-heading');
+  const topbar=layout.querySelector('.topbar');
+  if(!heading||!topbar)return;
+  layout.classList.add('fleet-dashboard-compact');
+
+  layout.querySelector('.workspace-context')?.remove();
+  layout.querySelector('.task-shortcuts')?.remove();
+  const attention=layout.querySelector('.attention');
+  if(attention?.querySelector('.pending-item')){
+   attention.querySelector('h2').textContent='Conferências pendentes';
+   attention.querySelector('.panel-head p')?.remove();
+  }else attention?.remove();
+  layout.querySelector('.recent .panel-head p')?.remove();
+  heading.querySelector('.eyebrow')?.remove();
+  heading.querySelector('p')?.remove();
+  heading.querySelector('h1').textContent='Visão geral da frota';
+
+  const management=topbar.querySelector('[data-ce-back]');
+  const services=topbar.querySelector('[data-pm-switch]');
+  if(management){
+   management.innerHTML=svg('grid',16)+' Gestão do CE';
+   topbar.querySelector('.breadcrumbs')?.prepend(management);
+  }
+  if(services){
+   services.innerHTML=svg('link',16)+' Serviços do CE';
+   topbar.querySelector('.topbar-right')?.prepend(services);
+  }
+  const actions=document.createElement('div');
+  actions.className='fleet-dashboard-actions';
+  const review=topbar.querySelector('[data-review-externals]');
+  if(review)heading.append(review);
+  for(const button of heading.querySelectorAll(':scope > button')){
+   const label={
+    'Alteração de senhas':['shield','Senhas'],
+    'Pedidos externos de viatura':['report','Pedidos externos'],
+    'Bases de usuários':['users','Base de usuários'],
+    'Nova saída':['plus','Nova saída'],
+    'Cadastros externos':['users','Cadastros externos']
+   }[button.textContent.trim()];
+   if(label){
+    button.title=button.textContent.trim();
+    button.innerHTML=svg(label[0],16)+' '+label[1];
+   }
+   actions.append(button);
+  }
+  heading.append(actions);
+  layout.querySelectorAll('.stat-top > span:first-child').forEach(label=>{
+   if(label.textContent==='Viaturas cadastradas')label.textContent='Frota cadastrada';
+  });
+ };
+}
